@@ -65,3 +65,9 @@ test-framework/results/
 
 #Docker stuff
 docker/.buildx_config.toml
+
+# Temporary runtime files
+nohup.out
+*.pid
+collector.log
+collector_*.log

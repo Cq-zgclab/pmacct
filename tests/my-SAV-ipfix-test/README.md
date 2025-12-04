@@ -1,12 +1,51 @@
-# my-SAV-ipfix-test
+# SAV IPFIX Test Suite
 
-This directory contains a minimal test to validate a draft (non-IANA) set of SAV IPFIX Information Elements using temporary Element IDs (>30000).
+Complete test suite for validating IPFIX export of SAV (Source Address Validation) Information Elements based on **draft-cao-opsawg-ipfix-sav-01**.
 
-What is included
-- `nfacctd-00.conf` - minimal pmacct `nfacctd` config that listens on UDP port 9991.
-- `send_ipfix.py` - Python script that sends an IPFIX v10 Template and Data record using temporary Element IDs 30001..30004 and Template ID 400.
-- `Dockerfile.sender` - tiny image to run the Python sender.
-- `docker-compose.yml` - run `nfacctd` (using the public pmacct image) and the sender together.
+## 🎯 Implementation Status
+
+- ✅ **Phase 1A**: subTemplateList完整实现 (RFC 6313)
+- 🔧 **Phase 1B**: pmacct C代码解析端 (进行中)
+
+## 📁 Directory Structure
+
+```
+my-SAV-ipfix-test/
+├── docs/          # Documentation, reports, and analysis
+├── test-data/     # SAV rule JSON files for 4 sub-templates
+├── scripts/       # IPFIX sender tools and utilities  
+├── tests/         # Automated test suites
+├── config/        # nfacctd configuration files
+├── docker/        # Docker setup (optional)
+└── output/        # Runtime output (gitignored)
+```
+
+## 🚀 Quick Start
+
+### Option 1: Run All Tests (Recommended)
+```bash
+./tests/run_all_tests.sh
+```
+
+### Option 2: Send IPFIX with SAV Rules
+```bash
+# IPv4 Interface-to-Prefix (Template 901)
+./scripts/send_ipfix_with_ip.py \
+  --sav-rules test-data/sav_rules_example.json \
+  --sub-template-id 901 \
+  --use-complete-message
+
+# IPv6 Prefix-to-Interface (Template 904)
+./scripts/send_ipfix_with_ip.py \
+  --sav-rules test-data/sav_rules_prefix2if_ipv6.json \
+  --sub-template-id 904 \
+  --use-complete-message
+```
+
+### Option 3: Test Specific Templates
+```bash
+./tests/test_all_templates.sh
+```
 
 Run options (Ubuntu cloud host)
 Prereqs (on Ubuntu): docker, docker-compose (or use docker compose plugin), python3

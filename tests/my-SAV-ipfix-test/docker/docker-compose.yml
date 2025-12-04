@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  nfacctd:
+    image: pmacct/pmacct:latest
+    container_name: nfacctd_sav_test
+    volumes:
+      - ./nfacctd-00.conf:/etc/pmacct/nfacctd.conf:ro
+    networks:
+      - sav-net
+    ports:
+      - "9991:9991/udp"
+
+  sender:
+    build:
+      context: .
+      dockerfile: Dockerfile.sender
+    container_name: sender_sav_test
+    networks:
+      - sav-net
+    depends_on:
+      - nfacctd
+    environment:
+      - TARGET_HOST=nfacctd
+      - TARGET_PORT=9991
+
+networks:
+  sav-net:
+    driver: bridge

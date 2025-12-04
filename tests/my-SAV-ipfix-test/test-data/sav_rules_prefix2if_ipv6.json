@@ -1,0 +1,12 @@
+[
+  {
+    "prefix": "2001:db8:c::",
+    "prefix_len": 48,
+    "interface_id": 5003
+  },
+  {
+    "prefix": "2001:db8:d::",
+    "prefix_len": 48,
+    "interface_id": 5003
+  }
+]
