@@ -1,0 +1,615 @@
+nohup: ignoring input
+I1203 17:24:19.298826  389329 collector.go:206] Starting IPFIX collector
+I1203 17:24:19.299627  389329 process.go:142] "Initializing the collecting process" encrypted=false address="0.0.0.0:4739" protocol="tcp" maxBufferSize=65535 templateTTL="0s" numExtraElements=0 decodingMode="Strict"
+I1203 17:24:19.299755  389329 collector.go:278] "Server listening on :8080"
+I1203 17:24:19.299988  389329 process.go:174] Starting the collecting process
+I1203 17:24:19.300027  389329 tcp.go:39] Start TCP collecting process on [::]:4739
+I1203 17:25:25.734940  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1001
+I1203 17:25:25.734980  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.735001  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.755192  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1002
+I1203 17:25:25.755234  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.755250  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.775296  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1003
+I1203 17:25:25.775337  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.775351  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.795404  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1004
+I1203 17:25:25.795444  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.795457  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.815561  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1005
+I1203 17:25:25.815600  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.815618  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.835669  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1006
+I1203 17:25:25.835718  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.835730  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.855712  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1007
+I1203 17:25:25.855743  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.855750  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.875821  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1008
+I1203 17:25:25.875854  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.875860  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.895921  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1009
+I1203 17:25:25.895956  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.895965  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.916036  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1010
+I1203 17:25:25.916091  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.916103  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.936166  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1011
+I1203 17:25:25.936215  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.936228  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.956261  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1012
+I1203 17:25:25.956293  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.956318  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.976391  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1013
+I1203 17:25:25.976425  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.976437  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:25.996497  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1014
+I1203 17:25:25.996539  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:25.996552  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.016648  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1015
+I1203 17:25:26.016707  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.016720  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.036765  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1016
+I1203 17:25:26.036842  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.036857  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.057145  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1017
+I1203 17:25:26.057198  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.057212  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.077274  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1018
+I1203 17:25:26.077314  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.077327  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.097349  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1019
+I1203 17:25:26.097468  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.097483  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.117495  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1020
+I1203 17:25:26.117532  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.117544  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.137606  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1021
+I1203 17:25:26.137651  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.137666  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.157674  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1022
+I1203 17:25:26.157710  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.157734  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.177757  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1023
+I1203 17:25:26.177791  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.177803  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.197850  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1024
+I1203 17:25:26.197884  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.197892  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.218025  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1025
+I1203 17:25:26.218079  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.218109  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.238501  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1026
+I1203 17:25:26.238554  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.238568  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.258510  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1027
+I1203 17:25:26.258555  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.258569  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.278596  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1028
+I1203 17:25:26.278651  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.278664  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.298716  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1029
+I1203 17:25:26.298759  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.298788  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.318875  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1030
+I1203 17:25:26.318923  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.318940  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.338981  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1031
+I1203 17:25:26.339027  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.339043  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.359088  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1032
+I1203 17:25:26.359132  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.359146  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.379216  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1033
+I1203 17:25:26.379260  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.379274  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.399301  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1034
+I1203 17:25:26.399343  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.399357  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.419398  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1035
+I1203 17:25:26.419429  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.419441  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.439495  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1036
+I1203 17:25:26.439537  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.439551  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.459602  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1037
+I1203 17:25:26.459633  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.459644  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.479679  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1038
+I1203 17:25:26.479725  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.479738  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.499781  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1039
+I1203 17:25:26.499811  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.499823  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.519902  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1040
+I1203 17:25:26.519938  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.519951  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.540029  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1041
+I1203 17:25:26.540065  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.540077  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.560178  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1042
+I1203 17:25:26.560221  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.560236  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.580273  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1043
+I1203 17:25:26.580316  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.580331  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.600397  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1044
+I1203 17:25:26.600443  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.600457  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.620432  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1045
+I1203 17:25:26.620469  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.620481  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.640549  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1046
+I1203 17:25:26.640581  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.640592  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.660687  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1047
+I1203 17:25:26.660732  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.660747  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.680825  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1048
+I1203 17:25:26.680874  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.680887  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.701225  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1049
+I1203 17:25:26.701273  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.701380  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.721604  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1050
+I1203 17:25:26.721659  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.721674  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.741699  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1051
+I1203 17:25:26.741735  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.741751  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.761808  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1052
+I1203 17:25:26.761857  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.761870  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.781975  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1053
+I1203 17:25:26.782025  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.782038  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.802076  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1054
+I1203 17:25:26.802124  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.802137  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.822197  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1055
+I1203 17:25:26.822244  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.822258  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.842266  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1056
+I1203 17:25:26.842307  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.842321  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.862393  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1057
+I1203 17:25:26.862431  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.862443  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.882492  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1058
+I1203 17:25:26.882532  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.882546  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.902589  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1059
+I1203 17:25:26.902644  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.902657  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.922746  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1060
+I1203 17:25:26.922786  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.922799  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.942802  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1061
+I1203 17:25:26.942843  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.942857  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.962967  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1062
+I1203 17:25:26.963008  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.963022  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:26.983035  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1063
+I1203 17:25:26.983077  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:26.983091  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.003144  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1064
+I1203 17:25:27.003175  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.003186  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.023325  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1065
+I1203 17:25:27.023414  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.023428  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.043543  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1066
+I1203 17:25:27.043594  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.043622  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.063773  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1067
+I1203 17:25:27.063821  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.063835  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.083784  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1068
+I1203 17:25:27.083822  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.083834  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.103894  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1069
+I1203 17:25:27.103924  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.103936  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.123989  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1070
+I1203 17:25:27.124023  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.124035  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.144129  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1071
+I1203 17:25:27.144173  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.144187  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.164267  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1072
+I1203 17:25:27.164310  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.164323  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.184413  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1073
+I1203 17:25:27.184464  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.184479  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.204540  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1074
+I1203 17:25:27.204584  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.204599  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.224645  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1075
+I1203 17:25:27.224699  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.224712  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.244765  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1076
+I1203 17:25:27.244808  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.244821  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.264869  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1077
+I1203 17:25:27.264911  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.264924  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.284973  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1078
+I1203 17:25:27.285021  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.285046  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.305023  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1079
+I1203 17:25:27.305058  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.305070  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.325186  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1080
+I1203 17:25:27.325228  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.325244  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.345271  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1081
+I1203 17:25:27.345333  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.345348  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.365361  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1082
+I1203 17:25:27.365407  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.365420  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.385488  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1083
+I1203 17:25:27.385524  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.385537  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.405570  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1084
+I1203 17:25:27.405601  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.405612  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.425735  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1085
+I1203 17:25:27.425783  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.425797  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.445831  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1086
+I1203 17:25:27.445869  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.445883  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.465918  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1087
+I1203 17:25:27.465973  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.465986  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.486034  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1088
+I1203 17:25:27.486082  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.486095  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.506118  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1089
+I1203 17:25:27.506168  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.506180  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.526329  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1090
+I1203 17:25:27.526388  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.526403  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.546383  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1091
+I1203 17:25:27.546419  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.546444  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.566482  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1092
+I1203 17:25:27.566516  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.566528  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.586757  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1093
+I1203 17:25:27.586794  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.586805  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.606746  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1094
+I1203 17:25:27.606778  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.606789  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.626852  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1095
+I1203 17:25:27.626899  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.626914  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.646940  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1096
+I1203 17:25:27.646975  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.646991  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.667143  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1097
+I1203 17:25:27.667201  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.667215  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.687319  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1098
+I1203 17:25:27.687375  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.687390  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.707468  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1099
+I1203 17:25:27.707517  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.707531  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.727645  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1100
+I1203 17:25:27.727692  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.727706  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.747753  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1101
+I1203 17:25:27.747801  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.747815  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.767804  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1102
+I1203 17:25:27.767844  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.767876  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.787898  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1103
+I1203 17:25:27.787935  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.787949  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.808079  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1104
+I1203 17:25:27.808119  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.808132  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.828112  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1105
+I1203 17:25:27.828150  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.828163  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.848230  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1106
+I1203 17:25:27.848272  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.848287  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.868390  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1107
+I1203 17:25:27.868443  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.868456  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.888470  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1108
+I1203 17:25:27.888524  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.888569  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.908529  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1109
+I1203 17:25:27.908564  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.908577  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.928620  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1110
+I1203 17:25:27.928655  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.928689  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.948731  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1111
+I1203 17:25:27.948781  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.948794  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.968902  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1112
+I1203 17:25:27.968942  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.968954  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:27.989026  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1113
+I1203 17:25:27.989066  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:27.989079  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.009064  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1114
+I1203 17:25:28.009098  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.009116  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.029232  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1115
+I1203 17:25:28.029265  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.029277  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.049278  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1116
+I1203 17:25:28.049311  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.049323  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.069338  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1117
+I1203 17:25:28.069367  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.069391  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.089534  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1118
+I1203 17:25:28.089582  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.089594  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.109556  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1119
+I1203 17:25:28.109587  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.109599  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.129676  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1120
+I1203 17:25:28.129704  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.129717  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.149779  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1121
+I1203 17:25:28.149815  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.149827  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.169866  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1122
+I1203 17:25:28.169898  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.169905  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.189963  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1123
+I1203 17:25:28.189992  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.189998  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.210063  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1124
+I1203 17:25:28.210099  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.210107  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.230157  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1125
+I1203 17:25:28.230186  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.230192  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.250258  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1126
+I1203 17:25:28.250285  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.250296  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.270420  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1127
+I1203 17:25:28.270482  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.270494  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.290490  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1128
+I1203 17:25:28.290523  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.290534  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.310971  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1129
+I1203 17:25:28.311017  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.311030  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.330791  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1130
+I1203 17:25:28.330840  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.330854  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.350835  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1131
+I1203 17:25:28.350878  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.350905  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.370991  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1132
+I1203 17:25:28.371028  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.371041  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.391032  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1133
+I1203 17:25:28.391064  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.391076  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.411119  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1134
+I1203 17:25:28.411151  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.411162  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.431215  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1135
+I1203 17:25:28.431244  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.431256  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.451393  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1136
+I1203 17:25:28.451433  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.451446  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.471587  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1137
+I1203 17:25:28.471634  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.471649  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.491642  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1138
+I1203 17:25:28.491679  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.491692  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.511771  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1139
+I1203 17:25:28.511810  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.511824  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.531894  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1140
+I1203 17:25:28.531935  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.531949  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.552031  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1141
+I1203 17:25:28.552076  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.552090  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.572195  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1142
+I1203 17:25:28.572240  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.572253  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.592247  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1143
+I1203 17:25:28.592283  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.592295  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.612342  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1144
+I1203 17:25:28.612383  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.612409  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.632461  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1145
+I1203 17:25:28.632489  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.632500  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.652602  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1146
+I1203 17:25:28.652635  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.652646  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.672678  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1147
+I1203 17:25:28.672709  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.672725  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.692747  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1148
+I1203 17:25:28.692778  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.692789  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.712868  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1149
+I1203 17:25:28.712919  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.712933  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.733011  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1150
+I1203 17:25:28.733052  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.733071  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.753151  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1151
+I1203 17:25:28.753185  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.753198  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.773270  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1152
+I1203 17:25:28.773311  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.773323  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.793322  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1153
+I1203 17:25:28.793384  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.793398  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.813485  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1154
+I1203 17:25:28.813530  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.813542  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.833534  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1155
+I1203 17:25:28.833571  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.833584  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.853629  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1156
+I1203 17:25:28.853669  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.853682  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.873734  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1157
+I1203 17:25:28.873778  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.873791  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.893902  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1158
+I1203 17:25:28.893947  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.893961  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.913938  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1159
+I1203 17:25:28.913976  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.913990  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.934042  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1160
+I1203 17:25:28.934074  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.934086  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.954146  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1161
+I1203 17:25:28.954179  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.954191  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.974250  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1162
+I1203 17:25:28.974318  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.974331  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:28.994387  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1163
+I1203 17:25:28.994421  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:28.994432  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.014470  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1164
+I1203 17:25:29.014501  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.014512  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.034676  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1165
+I1203 17:25:29.034822  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.034888  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.054796  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1166
+I1203 17:25:29.054844  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.054859  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.074859  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1167
+I1203 17:25:29.074895  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.074908  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.094952  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1168
+I1203 17:25:29.094981  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.094992  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.115060  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1169
+I1203 17:25:29.115104  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.115116  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.135161  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1170
+I1203 17:25:29.135194  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.135223  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.155322  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1171
+I1203 17:25:29.155379  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.155403  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.175479  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1172
+I1203 17:25:29.175528  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.175542  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.195541  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1173
+I1203 17:25:29.195585  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.195599  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.215647  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1174
+I1203 17:25:29.215686  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.215700  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.235740  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1175
+I1203 17:25:29.235772  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.235782  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.255850  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1176
+I1203 17:25:29.255881  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.255892  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.275965  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1177
+I1203 17:25:29.276015  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.276027  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.296072  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1178
+I1203 17:25:29.296116  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.296130  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.316203  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1179
+I1203 17:25:29.316244  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.316259  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.336294  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1180
+I1203 17:25:29.336341  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.336363  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.356408  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1181
+I1203 17:25:29.356454  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.356467  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.376504  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1182
+I1203 17:25:29.376544  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.376558  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.396655  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1183
+I1203 17:25:29.396731  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.396745  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.416853  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1184
+I1203 17:25:29.416916  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.416931  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.436919  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1185
+I1203 17:25:29.436961  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.436974  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.457031  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1186
+I1203 17:25:29.457072  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.457085  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.477142  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1187
+I1203 17:25:29.477198  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.477211  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.497246  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1188
+I1203 17:25:29.497289  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.497302  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.517363  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1189
+I1203 17:25:29.517410  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.517421  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.537495  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1190
+I1203 17:25:29.537545  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.537560  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.557541  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1191
+I1203 17:25:29.557582  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.557595  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.577657  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1192
+I1203 17:25:29.577692  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.577708  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.597740  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1193
+I1203 17:25:29.597770  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.597780  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.617841  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1194
+I1203 17:25:29.617894  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.617906  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.638037  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1195
+I1203 17:25:29.638108  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.638123  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.658078  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1196
+I1203 17:25:29.658112  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.658124  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.678180  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1197
+I1203 17:25:29.678215  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.678248  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.698276  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1198
+I1203 17:25:29.698307  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.698317  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.718449  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1199
+I1203 17:25:29.718494  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.718505  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.738540  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=1200
+I1203 17:25:29.738580  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.738592  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.758593  389329 session.go:74] "Added template to template map" obsDomainID=10000 templateID=400
+I1203 17:25:29.758629  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=0 numRecords=1
+I1203 17:25:29.758642  389329 collector.go:260] Processing IPFIX message
+I1203 17:25:29.978995  389329 tcp.go:130] "Processed message from exporter" observationDomainID=10000 setType=1 numRecords=1
+I1203 17:25:29.979036  389329 tcp.go:94] "Connection was closed by client"
+I1203 17:25:29.979094  389329 collector.go:260] Processing IPFIX message
+I1203 19:02:08.474325  389329 process.go:189] Stopped the collecting process
+I1203 19:02:08.536308  389329 collector.go:290] Stopping IPFIX collector
+I1203 19:02:08.650154  389329 collector.go:298] "Server gracefully stopped"

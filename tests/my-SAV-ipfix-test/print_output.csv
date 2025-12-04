@@ -1,0 +1,2 @@
+SRC_IP,sav_rule,sav_target,sav_policy_action,sav_matched,sav_matched_parsed,PACKETS,BYTES
+127.0.0.1,0,0,2,01-F4-7F-00-00-01-20,,20,2000

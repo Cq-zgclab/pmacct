@@ -1,0 +1,247 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * *'  # every day at midnight
+
+#Global vars
+env:
+  #TODO: avoid duplicity ci/regression_tests
+  DAEMONS: "pmacctd nfacctd sfacctd uacctd pmbgpd pmbmpd pmtelemetryd"
+
+jobs:
+  ### Step 1: build container images
+  builder-docker:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        builder-name: [ ubuntu-focal, ubuntu-jammy, rockylinux-8, rockylinux-9 ]
+    steps:
+      - name: Checkout pmacct
+        uses: actions/checkout@v4
+        with:
+          path: pmacct
+
+      - name: Build docker image for ${{ matrix.builder-name }}
+        run: |
+          cd pmacct
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          git config --global --add safe.directory $GITHUB_WORKSPACE/src/external_libs/libcdada
+          git rev-parse HEAD
+          docker build -f ci/Dockerfile-${{ matrix.builder-name }}-for-pmacct -t builder_${{ matrix.builder-name }} .
+          mkdir -p /tmp/docker/
+          docker save -o /tmp/docker/builder_${{ matrix.builder-name }}.tar builder_${{ matrix.builder-name }}
+
+      - name: Artifact docker image
+        uses: actions/upload-artifact@v4
+        with:
+          name: builder_${{ matrix.builder-name }}
+          retention-days: 1
+          path: |
+            /tmp/docker
+
+  ### Step 2: permutations
+  build-and-test:
+    needs: [builder-docker]
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        builder-name: [ ubuntu-focal, ubuntu-jammy, rockylinux-8, rockylinux-9 ]
+        CONFIG_FLAGS: [
+                "",
+                "--enable-debug",
+                "--enable-debug --enable-jansson",
+                "--enable-debug --enable-jansson --enable-kafka",
+                "--enable-debug --enable-jansson --enable-kafka --enable-avro --enable-serdes",
+                "--enable-debug --enable-jansson --enable-zmq",
+                "--enable-debug --enable-jansson --enable-zmq --enable-kafka",
+                "--enable-debug --enable-mysql --enable-pgsql --enable-sqlite3 --enable-kafka --enable-geoipv2 --enable-jansson --enable-rabbitmq --enable-ndpi --enable-zmq --enable-avro --enable-serdes --enable-redis --enable-unyte-udp-notif",
+                "--enable-debug --enable-zmq",
+                "--enable-jansson",
+                "--enable-jansson --enable-kafka",
+                "--enable-jansson --enable-kafka --enable-avro --enable-serdes",
+                "--enable-jansson --enable-zmq",
+                "--enable-jansson --enable-zmq --enable-kafka",
+                "--enable-mysql --enable-pgsql --enable-sqlite3 --enable-kafka --enable-geoipv2 --enable-jansson --enable-rabbitmq --enable-ndpi --enable-zmq --enable-avro --enable-serdes --enable-redis --enable-unyte-udp-notif",
+                "--enable-zmq"]
+    env:
+      CONFIG_FLAGS: ${{ matrix.CONFIG_FLAGS }}
+    steps:
+      - name: Info
+        run: |
+          echo "Builder: builder_${{ matrix.builder-name }}"
+          echo "CONFIG_FLAGS: ${{ matrix.CONFIG_FLAGS }}"
+
+      - name: Create /tmp/docker folder to copy the docker registry (artifact)
+        run: |
+          mkdir -p /tmp/docker
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: builder_${{ matrix.builder-name }}
+          path: /tmp/docker
+
+      - name: List contents of /tmp/docker
+        run: |
+          ls -la /tmp/docker
+
+      - name: Checkout pmacct
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: pmacct
+
+      - name: Build in 'builder_${{ matrix.builder-name }}' with '${{ matrix.CONFIG_FLAGS }}'
+        run: |
+          cd pmacct
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          git config --global --add safe.directory $GITHUB_WORKSPACE/src/external_libs/libcdada
+          git rev-parse HEAD
+          docker load -i /tmp/docker/builder_${{ matrix.builder-name }}.tar
+          CONTAINER_ID=$(docker run --rm -it -d -v `pwd`:`pwd` -w `pwd` -e CONFIG_FLAGS builder_${{ matrix.builder-name }}:latest)
+          echo "Launched container id:" $CONTAINER_ID
+          docker exec -i $CONTAINER_ID ./ci/script.sh
+          docker stop $CONTAINER_ID
+
+  ### Step 3.1: test that local single-platform builds work fine
+  docker-build-test-local:
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ ubuntu-24.04, ubuntu-24.04-arm ]
+    steps:
+      - name: Checkout pmacct
+        uses: actions/checkout@v1 #Don't use v2 messes everything
+        with:
+          path: pmacct
+
+      - name: Build single-platform
+        run: |
+          cd docker && V=1 make
+
+      - name: Docker (compose) smoke test
+        run: |
+          echo "Running smoke test using docker compose..."
+          TAG=_build docker compose -f ci/smoke-test/docker-compose.yml up -d
+          sleep 10
+          echo "Check that all containers are up and running, without restarts ..."
+          if [[ "$(docker inspect `docker ps -aq` | grep RestartCount | grep -v '\"RestartCount\": 0')" != "" ]]; then
+            echo "Some containers restarted!" && docker inspect `docker ps -aq` && /bin/false
+          fi
+          echo "Stopping containers..."
+          TAG=_build docker compose -f ci/smoke-test/docker-compose.yml down
+
+  ### Step 3.2: Build test and publish (bleeding-edge, latest and releases)
+  docker-multiplatform-build-test-publish:
+    runs-on: ubuntu-22.04
+    needs: [build-and-test, docker-build-test-local]
+    env:
+      PLATFORMS: linux/amd64,linux/arm64
+    steps:
+      - name: Cleanup disk to maximize runner disk space
+        uses: AdityaGarg8/remove-unwanted-software@v3 #easimon/maximize-build-space@v10
+        with:
+          remove-android: true
+          remove-dotnet: True
+          remove-haskell: true
+          remove-codeql: true
+          remove-docker-images: true
+
+      - name: Checkout pmacct
+        uses: actions/checkout@v1 #Don't use v2 messes everything
+        with:
+          path: pmacct
+
+      - name: Deduce PMACCT version and tags
+        run: |
+          echo "Fix mess with tags in actions/checkout..."
+          git fetch -f && git fetch -f --tags
+          echo "Deducing PMACCT_VERSION..."
+          PMACCT_VERSION=$(git describe --abbrev=0 --match="v*")
+
+          #Always push bleeding-edge when pushed to master
+          GIT_IS_BLEEDING_EDGE=$( (git branch --all --contains HEAD | grep master ) || echo "")
+          echo "GIT_IS_BLEEDING_EDGE=$GIT_IS_BLEEDING_EDGE"
+          if [ "$GIT_IS_BLEEDING_EDGE" != "" ]; then
+            echo "Tagging and uploading 'bleeding-edge'..."
+            TAGS="$TAGS bleeding-edge"
+          else
+            echo "NOT uploading 'bleeding-edge'... Not HEAD of master"
+          fi
+
+          #Upload vX.Y.Z only of it's a release commit
+          GIT_RELEASE_TAG=$(git describe --exact-match --match "v*" || echo "")
+          if [ "$GIT_RELEASE_TAG" != "" ]; then
+            echo "GIT_RELEASE_TAG=$GIT_RELEASE_TAG"
+            echo "Tagging and uploading release '$GIT_RELEASE_TAG'..."
+            TAGS="$TAGS $GIT_RELEASE_TAG"
+
+            #Latest tag
+            GIT_LAST_TAG=$(git tag --sort=v:refname | tail -n 1);
+            echo "GIT_LAST_TAG=$GIT_LAST_TAG"
+            if [ "$GIT_RELEASE_TAG" == "$GIT_LAST_TAG" ]; then
+              echo "Tagging and uploading 'latest'..."
+              TAGS="$TAGS latest"
+            else
+              echo "NOT uploading 'latest'..."
+            fi
+          else
+            echo "NOT uploading '$GIT_RELEASE_TAG' nor 'latest'. Not a release!"
+          fi
+
+          #Summarize deduced tags
+          echo "Deduced tags: $TAGS"
+          echo "TAGS=$TAGS" >> $GITHUB_ENV
+
+      - name: Get Runner's IP Address
+        run: |
+           RUNNER_IP=$(hostname -I | awk '{print $1}')
+           echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_ENV
+           echo "Deduced RUNNER_IP: $RUNNER_IP"
+
+      - name: Spawn docker registry
+        run: |
+          echo "Instruct dockerd to trust $RUNNER_IP:5000 as an insecure registry..."
+          sudo mkdir -p /etc/docker
+          echo "{
+            \"insecure-registries\": [\"http://$RUNNER_IP:5000\"]
+          }" | sudo tee /etc/docker/daemon.json > /dev/null
+          sudo systemctl restart docker
+          echo "Starting temporary docker registry..."
+          docker run -d -p 5000:5000 --name registry registry:2
+
+      - name: Build for platforms
+        run: |
+          echo "Building platforms: ${{ env.PLATFORMS }}..."
+          echo "Got tags from previous step: $TAGS"
+          cd docker && BUILD_REGISTRY=$RUNNER_IP:5000 PLATFORMS="${{env.PLATFORMS}}" V=1 make
+
+      - name: Docker (compose) smoke test
+        run: |
+          echo "Running smoke test using docker compose..."
+          export DOCKER_OPTS="--insecure-registry $RUNNER_IP:5000"
+          TAG=_build REPO=$RUNNER_IP:5000/ docker compose -f ci/smoke-test/docker-compose.yml up -d
+          sleep 10
+          echo "Check that all containers are up and running, without restarts ..."
+          if [[ "$(docker inspect `docker ps -aq` | grep RestartCount | grep -v '\"RestartCount\": 0')" != "" ]]; then
+            echo "Some containers restarted!" && docker inspect `docker ps -aq` && /bin/false
+          fi
+          echo "Stopping containers..."
+          TAG=_build docker compose -f ci/smoke-test/docker-compose.yml down
+
+      - name: Tag and push to dockerhub
+        if: ${{ github.event_name != 'pull_request' && vars.SKIP_DOCKERHUB_PUBLISH != 'true' && env.TAGS != '' }}
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "Logging in...";
+          echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+          echo "Publishing platforms(archs): ${{ env.PLATFORMS }}..."
+          echo "Got tags from previous step: $TAGS"
+          cd docker && BUILD_REGISTRY=$RUNNER_IP:5000 PUSH=${{secrets.DOCKER_USERNAME}} TAGS="${TAGS}" PLATFORMS="${{env.PLATFORMS}}" V=1 make

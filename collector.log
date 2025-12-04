@@ -1,0 +1,25 @@
+nohup: ignoring input
+I1203 10:03:51.251061  235466 collector.go:206] Starting IPFIX collector
+I1203 10:03:51.251672  235466 process.go:142] "Initializing the collecting process" encrypted=false address="0.0.0.0:4739" protocol="udp" maxBufferSize=65535 templateTTL="30m0s" numExtraElements=0 decodingMode="Strict"
+I1203 10:03:51.251867  235466 collector.go:278] "Server listening on :8080"
+I1203 10:03:51.252763  235466 process.go:174] Starting the collecting process
+I1203 10:03:51.252812  235466 udp.go:88] Start UDP collecting process on [::]:4739
+I1203 10:04:12.204230  235466 udp.go:103] Receiving 88 bytes from 127.0.0.1:48961
+I1203 10:04:12.204352  235466 session.go:74] "Added template to template map" obsDomainID=12345 templateID=400
+I1203 10:04:12.204377  235466 udp.go:167] Processed message from exporter 127.0.0.1, number of records: 1, observation domain ID: 12345
+I1203 10:04:12.204394  235466 collector.go:260] Processing IPFIX message
+I1203 10:04:13.536452  235466 udp.go:103] Receiving 98 bytes from 127.0.0.1:33707
+I1203 10:04:13.536568  235466 session.go:74] "Added template to template map" obsDomainID=12345 templateID=400
+I1203 10:04:13.536801  235466 udp.go:167] Processed message from exporter 127.0.0.1, number of records: 1, observation domain ID: 12345
+I1203 10:04:13.536814  235466 collector.go:260] Processing IPFIX message
+E1203 10:34:12.204484  235466 udp.go:155] UDP connection from 127.0.0.1:48961 timed out.
+I1203 10:34:12.204495  235466 session.go:82] Template with id 400, and obsDomainID 12345 is expired.
+I1203 10:34:12.204567  235466 session.go:132] "Deleted template from template map" obsDomainID=12345 templateID=400
+I1203 10:34:12.204580  235466 session.go:135] "No more templates for observation domain" obsDomainID=12345
+E1203 10:34:13.536947  235466 udp.go:155] UDP connection from 127.0.0.1:33707 timed out.
+I1203 10:34:13.536956  235466 session.go:82] Template with id 400, and obsDomainID 12345 is expired.
+I1203 10:34:13.537024  235466 session.go:132] "Deleted template from template map" obsDomainID=12345 templateID=400
+I1203 10:34:13.537036  235466 session.go:135] "No more templates for observation domain" obsDomainID=12345
+I1203 11:19:13.041131  235466 process.go:189] Stopped the collecting process
+I1203 11:19:13.041178  235466 collector.go:290] Stopping IPFIX collector
+I1203 11:19:13.041590  235466 collector.go:298] "Server gracefully stopped"

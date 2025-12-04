@@ -1,0 +1,228 @@
+{
+  "templates": {
+    "1001": [
+      {
+        "id": 10,
+        "len": 4,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 44,
+        "len": 4,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 9,
+        "len": 1,
+        "enterprise": false,
+        "pen": null
+      }
+    ],
+    "1002": [
+      {
+        "id": 10,
+        "len": 4,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 44,
+        "len": 4,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 9,
+        "len": 1,
+        "enterprise": false,
+        "pen": null
+      }
+    ],
+    "1003": [
+      {
+        "id": 10,
+        "len": 4,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 44,
+        "len": 4,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 9,
+        "len": 1,
+        "enterprise": false,
+        "pen": null
+      }
+    ],
+    "1004": [
+      {
+        "id": 10,
+        "len": 4,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 44,
+        "len": 4,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 9,
+        "len": 1,
+        "enterprise": false,
+        "pen": null
+      }
+    ],
+    "1005": [
+      {
+        "id": 10,
+        "len": 4,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 44,
+        "len": 4,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 9,
+        "len": 1,
+        "enterprise": false,
+        "pen": null
+      }
+    ],
+    "400": [
+      {
+        "id": 8,
+        "len": 4,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 12,
+        "len": 4,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 1,
+        "len": 8,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 2,
+        "len": 8,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 30001,
+        "len": 1,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 30002,
+        "len": 1,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 30003,
+        "len": 65535,
+        "enterprise": false,
+        "pen": null
+      },
+      {
+        "id": 30004,
+        "len": 1,
+        "enterprise": false,
+        "pen": null
+      }
+    ]
+  },
+  "data_sets": [
+    {
+      "obs_domain": 9001,
+      "set_id": 400,
+      "records": [
+        {
+          "sourceIPv4Address": "198.51.100.10",
+          "destinationIPv4Address": "203.0.113.10",
+          "octetDeltaCount": 55555,
+          "packetDeltaCount": 7,
+          "savRuleType": 0,
+          "savTargetType": 0,
+          "savMatchedContentList": [
+            {
+              "semantic": 3,
+              "template_id": 1001,
+              "entries": [
+                {
+                  "ingressInterface": 5001,
+                  "sourceIPv4Prefix": "192.0.2.4",
+                  "sourceIPv4PrefixLength": 24
+                }
+              ]
+            },
+            {
+              "semantic": 3,
+              "template_id": 1002,
+              "entries": [
+                {
+                  "ingressInterface": 5002,
+                  "sourceIPv4Prefix": "192.0.2.8",
+                  "sourceIPv4PrefixLength": 24
+                }
+              ]
+            },
+            {
+              "semantic": 3,
+              "template_id": 1003,
+              "entries": [
+                {
+                  "ingressInterface": 5003,
+                  "sourceIPv4Prefix": "192.0.2.12",
+                  "sourceIPv4PrefixLength": 24
+                }
+              ]
+            },
+            {
+              "semantic": 3,
+              "template_id": 1004,
+              "entries": [
+                {
+                  "ingressInterface": 5004,
+                  "sourceIPv4Prefix": "192.0.2.16",
+                  "sourceIPv4PrefixLength": 24
+                }
+              ]
+            },
+            {
+              "semantic": 3,
+              "template_id": 1005,
+              "entries": [
+                {
+                  "ingressInterface": 5005,
+                  "sourceIPv4Prefix": "192.0.2.20",
+                  "sourceIPv4PrefixLength": 24
+                }
+              ]
+            }
+          ],
+          "savPolicyAction": 2
+        }
+      ]
+    }
+  ]
+}
