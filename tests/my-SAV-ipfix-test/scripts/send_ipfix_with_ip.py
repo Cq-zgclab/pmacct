@@ -4,7 +4,10 @@ send_ipfix_with_ip.py - IPFIX SAV Message Sender with Full subTemplateList Suppo
 
 Purpose:
     Production-grade IPFIX v10 message generator implementing RFC 6313 subTemplateList
-    for SAV (Source Address Validation) Information Elements per draft-cao-opsawg-ipfix-sav-01.
+    for SAV (Source Address Validation) Information Elements.
+    
+    NOTE: draft-cao-opsawg-ipfix-sav-01 is in DRAFT stage.
+    IE numbers and PEN below are EXPERIMENTAL PLACEHOLDERS.
     
 Features:
     - RFC 7011 variable-length encoding (single-byte <255, extended ≥255)
@@ -73,6 +76,23 @@ import time
 import ipaddress
 import sys
 import json
+
+# ============================================================================
+# SAV IPFIX IE Definitions (draft-cao-opsawg-ipfix-sav-01)
+# ============================================================================
+# IMPORTANT: Draft uses STANDARD IANA IEs (NOT enterprise fields)
+# - No PEN (Private Enterprise Number)
+# - No enterprise bit (0x8000) in template encoding
+# - IE numbers are TBD (To Be Determined by IANA)
+#
+# For testing, using placeholder values 500-503
+# Update these when IANA assigns official numbers
+# ============================================================================
+
+SAV_IE_RULE_TYPE = 500           # TBD1: 0=allowlist, 1=blocklist
+SAV_IE_TARGET_TYPE = 501         # TBD2: 0=interface-based, 1=prefix-based  
+SAV_IE_MATCHED_CONTENT = 502     # TBD3: subTemplateList
+SAV_IE_POLICY_ACTION = 503       # TBD4: 0=permit, 1=discard, 2=rate-limit, 3=redirect
 
 
 # RFC 7011 variable-length encoding
@@ -419,9 +439,18 @@ def build_complete_message(template_id=400, seq=1, obs_domain=1234,
                           include_sub_templates=True):
     """Build a complete IPFIX message with main template + sub-templates + data.
     
+    Per draft-cao-opsawg-ipfix-sav-01: SAV IEs use STANDARD IANA encoding
+    (NOT enterprise fields - no PEN, no enterprise bit).
+    
     Args:
         include_sub_templates: If True, include all 4 sub-template definitions
-        Other args: Same as build_ipfix_message
+        enterprise: DEPRECATED - draft uses standard IANA IEs (kept for compatibility)
+        pen: DEPRECATED - no PEN used (kept for compatibility)
+        sav_rules: List of SAV rules to encode
+        sub_template_id: Sub-template ID (901-904)
+        sav_rule_type: 0=allowlist, 1=blocklist
+        sav_target_type: 0=interface-based, 1=prefix-based
+        sav_action: 0=permit, 1=discard, 2=rate-limit, 3=redirect
     
     Returns:
         bytes: Complete IPFIX message ready to send
@@ -430,26 +459,23 @@ def build_complete_message(template_id=400, seq=1, obs_domain=1234,
     export_time = int(time.time())
     seq_num = seq
     
-    # Build main template (Template 400)
+    # Build main template (Template 400) per draft Appendix A
+    # All IEs use standard IANA encoding (no enterprise bit)
     tpl_fields = [
-        (8, 4),      # sourceIPv4Address
-        (12, 4),     # destinationIPv4Address
-        (1, 8),      # octetDeltaCount
-        (2, 8),      # packetDeltaCount
-        (30001, 1),  # savRuleType
-        (30002, 1),  # savTargetType
-        (30003, 0xFFFF),  # savMatchedContentList (variable)
-        (30004, 1),  # savPolicyAction
+        (8, 4),                          # sourceIPv4Address (IANA)
+        (12, 4),                         # destinationIPv4Address (IANA)
+        (1, 8),                          # octetDeltaCount (IANA)
+        (2, 8),                          # packetDeltaCount (IANA)
+        (SAV_IE_RULE_TYPE, 1),           # savRuleType (TBD1, testing: 500)
+        (SAV_IE_TARGET_TYPE, 1),         # savTargetType (TBD2, testing: 501)
+        (SAV_IE_MATCHED_CONTENT, 0xFFFF),# savMatchedContentList (TBD3, testing: 502, variable)
+        (SAV_IE_POLICY_ACTION, 1),       # savPolicyAction (TBD4, testing: 503)
     ]
     
     tpl_rec = struct.pack('!HH', template_id, len(tpl_fields))
     for fid, flen in tpl_fields:
-        if enterprise and fid >= 30000:
-            ie_id = (fid & 0x7FFF) | 0x8000
-            tpl_rec += struct.pack('!HH', ie_id & 0xFFFF, flen & 0xFFFF)
-            tpl_rec += struct.pack('!I', pen)
-        else:
-            tpl_rec += struct.pack('!HH', fid & 0xFFFF, flen & 0xFFFF)
+        # Standard IANA IE encoding (no enterprise bit)
+        tpl_rec += struct.pack('!HH', fid, flen)
     
     tpl_set_id = 2
     tpl_set_len = 4 + len(tpl_rec)

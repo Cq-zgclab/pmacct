@@ -11,14 +11,35 @@
 #ifndef SAV_PARSER_H
 #define SAV_PARSER_H
 
-/* SAV IPFIX Information Elements (Enterprise ID: 45575) */
-#define SAV_ENTERPRISE_ID               45575
+/*
+ * SAV IPFIX Information Elements per draft-cao-opsawg-ipfix-sav-01
+ * Reference: /workspaces/pmacct/docs/draft-cao-opsawg-ipfix-sav-01.md
+ *
+ * CRITICAL COMPLIANCE NOTES:
+ * 1. Draft uses STANDARD IANA IE space (NOT enterprise-specific)
+ * 2. NO Private Enterprise Number (PEN) - no enterprise bit encoding
+ * 3. IE numbers are currently TBD (To Be Determined by IANA)
+ * 4. For testing, using placeholder values 500-503
+ *
+ * When IANA assigns official IE numbers, update the defines below.
+ * See draft Section 7 (IANA Considerations) for allocation request.
+ */
 
-/* SAV Information Element IDs (draft-cao-opsawg-ipfix-sav-01) */
-#define SAV_IE_RULE_TYPE                900   /* sav_rule_type */
-#define SAV_IE_TARGET_TYPE              901   /* sav_target_type */
-#define SAV_IE_MATCHED_CONTENT          902   /* sav_matched_content (subTemplateList) */
-#define SAV_IE_POLICY_ACTION            903   /* sav_policy_action */
+/* 
+ * SAV Information Element IDs (draft Section 4)
+ * 
+ * TESTING PLACEHOLDERS (will change when IANA assigns):
+ * - savRuleType: TBD1 → placeholder 500
+ * - savTargetType: TBD2 → placeholder 501
+ * - savMatchedContentList: TBD3 → placeholder 502
+ * - savPolicyAction: TBD4 → placeholder 503
+ *
+ * Values per draft specification:
+ */
+#define SAV_IE_RULE_TYPE                500   /* TBD1: 0=allowlist, 1=blocklist */
+#define SAV_IE_TARGET_TYPE              501   /* TBD2: 0=interface-based, 1=prefix-based */
+#define SAV_IE_MATCHED_CONTENT          502   /* TBD3: subTemplateList */
+#define SAV_IE_POLICY_ACTION            503   /* TBD4: 0=permit, 1=discard, 2=rate-limit, 3=redirect */
 
 /* Legacy compatibility */
 #define SAV_RULE_TYPE                   SAV_IE_RULE_TYPE

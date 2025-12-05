@@ -1808,33 +1808,31 @@ void process_sav_fields(u_char *pkt, struct template_cache_entry *tpl, struct pa
   pptrs->sav_rule_count = 0;
   pptrs->sav_validation_mode = 0;
   
-  /* Check for SAV enterprise fields (PEN 45575) */
-  sav_matched_content = ext_db_get_ie(tpl, SAV_ENTERPRISE_ID, SAV_IE_MATCHED_CONTENT, 0);
-  sav_validation_mode = ext_db_get_ie(tpl, SAV_ENTERPRISE_ID, SAV_IE_RULE_TYPE, 0);
+  /* 
+   * SAV IEs are STANDARD IANA fields (NOT enterprise) per draft-cao-opsawg-ipfix-sav-01
+   * Use tpl->fld[] for standard IEs, not ext_db_get_ie()
+   */
   
-  /* Debug: Check template's ext_db */
-  {
-    int i, j;
-    Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV: Template %u has ext_db entries:\n", config.name, tpl->template_id);
-    for (i = 0; i < TPL_EXT_DB_ENTRIES; i++) {
-      for (j = 0; j < IES_PER_TPL_EXT_DB_ENTRY; j++) {
-        if (tpl->ext_db[i].ie[j].pen != 0 || tpl->ext_db[i].ie[j].type != 0) {
-          Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV:   ext_db[%d].ie[%d] PEN=%u IE=%u off=%u len=%u\n",
-              config.name, i, j, tpl->ext_db[i].ie[j].pen, tpl->ext_db[i].ie[j].type,
-              tpl->ext_db[i].ie[j].off, tpl->ext_db[i].ie[j].len);
-        }
-      }
-    }
+  /* Check if template contains SAV IEs */
+  if (tpl->fld[SAV_IE_MATCHED_CONTENT].len > 0) {
+    sav_matched_content = &tpl->fld[SAV_IE_MATCHED_CONTENT];
   }
   
-  Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV: Checking template (matched_content=%p, validation_mode=%p)\n",
-      config.name, sav_matched_content, sav_validation_mode);
+  if (tpl->fld[SAV_IE_RULE_TYPE].len > 0) {
+    sav_validation_mode = &tpl->fld[SAV_IE_RULE_TYPE];
+  }
+  
+  Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV: Template %u - matched_content IE=%u (len=%u off=%u), rule_type IE=%u (len=%u off=%u)\n",
+      config.name, tpl->template_id,
+      SAV_IE_MATCHED_CONTENT, sav_matched_content ? sav_matched_content->len : 0, sav_matched_content ? sav_matched_content->off[0] : 0,
+      SAV_IE_RULE_TYPE, sav_validation_mode ? sav_validation_mode->len : 0, sav_validation_mode ? sav_validation_mode->off[0] : 0);
   
   if (!sav_matched_content || sav_matched_content->len == 0) {
+    Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV: No SAV data in this record\n", config.name);
     return; /* No SAV data in this record */
   }
   
-  Log(LOG_INFO, "INFO ( %s/core ): SAV: Found SAV data in record (len=%u)\n",
+  Log(LOG_INFO, "INFO ( %s/core ): SAV: Found SAV data in record (matched_content len=%u)\n",
       config.name, sav_matched_content->len);
   
   /* Extract validation mode if present */
