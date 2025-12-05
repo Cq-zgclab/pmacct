@@ -28,6 +28,7 @@
 #include "classifier.h"
 #include "bgp/bgp.h"
 #include "rpki/rpki.h"
+#include "../include/sav_parser.h"
 #if defined (WITH_NDPI)
 #include "ndpi/ndpi.h"
 #endif
@@ -1912,7 +1913,12 @@ void compose_json_path_delay_max_usec(json_t *obj, struct chained_cache *cc)
 
 void compose_json_sav_fields(json_t *obj, struct chained_cache *cc)
 {
-  struct packet_ptrs *pptrs = cc->pptrs;
+  struct packet_ptrs *pptrs = NULL;
+  
+  /* SAV: Get pptrs from chained_cache if available */
+  if (cc) {
+    pptrs = cc->pptrs;
+  }
   
   if (pptrs && pptrs->sav_rules && pptrs->sav_rule_count > 0) {
     const char *mode_str;
