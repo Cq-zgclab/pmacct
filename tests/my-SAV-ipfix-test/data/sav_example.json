@@ -1,0 +1,17 @@
+[
+  {
+    "interface_id": 1,
+    "prefix": "192.0.2.0",
+    "prefix_len": 24
+  },
+  {
+    "interface_id": 2,
+    "prefix": "198.51.100.0",
+    "prefix_len": 24
+  },
+  {
+    "interface_id": 3,
+    "prefix": "203.0.113.0",
+    "prefix_len": 24
+  }
+]

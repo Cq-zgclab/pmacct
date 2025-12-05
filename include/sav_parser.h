@@ -15,31 +15,25 @@
  * SAV IPFIX Information Elements per draft-cao-opsawg-ipfix-sav-01
  * Reference: /workspaces/pmacct/docs/draft-cao-opsawg-ipfix-sav-01.md
  *
- * CRITICAL COMPLIANCE NOTES:
- * 1. Draft uses STANDARD IANA IE space (NOT enterprise-specific)
- * 2. NO Private Enterprise Number (PEN) - no enterprise bit encoding
- * 3. IE numbers are currently TBD (To Be Determined by IANA)
- * 4. For testing, using placeholder values 500-503
+ * Two encoding modes:
+ * 1. STANDARD IANA: IE 30001-30004 (test placeholders)
+ * 2. ENTERPRISE: PEN=0, IE 1-4 (RFC 7013 compliant)
  *
- * When IANA assigns official IE numbers, update the defines below.
- * See draft Section 7 (IANA Considerations) for allocation request.
+ * These numbers are FIXED for testing. Do NOT change.
  */
 
-/* 
- * SAV Information Element IDs (draft Section 4)
- * 
- * TESTING PLACEHOLDERS (will change when IANA assigns):
- * - savRuleType: TBD1 → placeholder 500
- * - savTargetType: TBD2 → placeholder 501
- * - savMatchedContentList: TBD3 → placeholder 502
- * - savPolicyAction: TBD4 → placeholder 503
- *
- * Values per draft specification:
- */
-#define SAV_IE_RULE_TYPE                500   /* TBD1: 0=allowlist, 1=blocklist */
-#define SAV_IE_TARGET_TYPE              501   /* TBD2: 0=interface-based, 1=prefix-based */
-#define SAV_IE_MATCHED_CONTENT          502   /* TBD3: subTemplateList */
-#define SAV_IE_POLICY_ACTION            503   /* TBD4: 0=permit, 1=discard, 2=rate-limit, 3=redirect */
+/* Standard IANA mode (for testing, fixed at 30001-30004) */
+#define SAV_IE_RULE_TYPE                30001  /* 0=allowlist, 1=blocklist */
+#define SAV_IE_TARGET_TYPE              30002  /* 0=interface-based, 1=prefix-based */
+#define SAV_IE_MATCHED_CONTENT          30003  /* subTemplateList */
+#define SAV_IE_POLICY_ACTION            30004  /* 0=permit, 1=discard, 2=rate-limit, 3=redirect */
+
+/* Enterprise mode (PEN=0, IE 1-4) */
+#define SAV_IE_RULE_TYPE_ENT            1
+#define SAV_IE_TARGET_TYPE_ENT          2
+#define SAV_IE_MATCHED_CONTENT_ENT      3
+#define SAV_IE_POLICY_ACTION_ENT        4
+#define SAV_ENTERPRISE_ID               0      /* Placeholder PEN */
 
 /* Legacy compatibility */
 #define SAV_RULE_TYPE                   SAV_IE_RULE_TYPE
@@ -80,10 +74,11 @@ struct sav_rule {
  * @param validation_mode Validation mode from parent template field
  * @param rules          Output: pointer to allocated array of rules
  * @param count          Output: number of rules parsed
+ * @param template_id_out Output: sub-template ID (901-904), optional (can be NULL)
  * @return 0 on success, -1 on error
  */
 int parse_sav_sub_template_list(u_char *data, uint16_t len, uint8_t validation_mode,
-                                  struct sav_rule **rules, int *count);
+                                  struct sav_rule **rules, int *count, uint16_t *template_id_out);
 
 /**
  * Parse a single SAV rule from a sub-template record

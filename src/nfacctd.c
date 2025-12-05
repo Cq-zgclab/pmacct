@@ -1793,14 +1793,18 @@ void process_v5_packet(unsigned char *pkt, u_int16_t len, struct packet_ptrs *pp
   }
 }
 
-/* SAV (Source Address Validation) Processing */
+/* SAV (Source Address Validation) Processing - FULL IMPLEMENTATION */
 void process_sav_fields(u_char *pkt, struct template_cache_entry *tpl, struct packet_ptrs *pptrs)
 {
+  struct utpl_field *sav_rule_type = NULL;
+  struct utpl_field *sav_target_type = NULL;
   struct utpl_field *sav_matched_content = NULL;
-  struct utpl_field *sav_validation_mode = NULL;
+  struct utpl_field *sav_action = NULL;
   struct sav_rule *rules = NULL;
   int rule_count = 0;
   uint8_t validation_mode = 0;
+  u_char *data_ptr = pkt;
+  uint16_t content_len = 0;
   int ret;
   
   /* Initialize SAV fields */
@@ -1808,73 +1812,113 @@ void process_sav_fields(u_char *pkt, struct template_cache_entry *tpl, struct pa
   pptrs->sav_rule_count = 0;
   pptrs->sav_validation_mode = 0;
   
-  /* 
-   * SAV IEs are STANDARD IANA fields (NOT enterprise) per draft-cao-opsawg-ipfix-sav-01
-   * Use tpl->fld[] for standard IEs, not ext_db_get_ie()
-   */
-  
-  /* Check if template contains SAV IEs */
-  if (tpl->fld[SAV_IE_MATCHED_CONTENT].len > 0) {
-    sav_matched_content = &tpl->fld[SAV_IE_MATCHED_CONTENT];
+  if (config.debug && tpl->template_id == 400) {
+    Log(LOG_DEBUG, "DEBUG ( %s/core ): Processing SAV template 400\n", config.name);
   }
   
-  if (tpl->fld[SAV_IE_RULE_TYPE].len > 0) {
-    sav_validation_mode = &tpl->fld[SAV_IE_RULE_TYPE];
-  }
+  /* Try to find SAV IEs in ext_db (for enterprise encoding or high-numbered IEs) */
+  /* Standard IANA mode: IE 30001-30004 */
+  /* Enterprise mode: PEN=0, IE 1-4 */
   
-  Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV: Template %u - matched_content IE=%u (len=%u off=%u), rule_type IE=%u (len=%u off=%u)\n",
-      config.name, tpl->template_id,
-      SAV_IE_MATCHED_CONTENT, sav_matched_content ? sav_matched_content->len : 0, sav_matched_content ? sav_matched_content->off[0] : 0,
-      SAV_IE_RULE_TYPE, sav_validation_mode ? sav_validation_mode->len : 0, sav_validation_mode ? sav_validation_mode->off[0] : 0);
+  /* Attempt standard IANA IEs first (30001-30004) */
+  sav_rule_type = ext_db_get_ie(tpl, 0, 30001, 0);       /* SAV_IE_RULE_TYPE */
+  sav_target_type = ext_db_get_ie(tpl, 0, 30002, 0);     /* SAV_IE_TARGET_TYPE */
+  sav_matched_content = ext_db_get_ie(tpl, 0, 30003, 0); /* SAV_IE_MATCHED_CONTENT */
+  sav_action = ext_db_get_ie(tpl, 0, 30004, 0);          /* SAV_IE_POLICY_ACTION */
   
-  if (!sav_matched_content || sav_matched_content->len == 0) {
-    Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV: No SAV data in this record\n", config.name);
-    return; /* No SAV data in this record */
-  }
-  
-  Log(LOG_INFO, "INFO ( %s/core ): SAV: Found SAV data in record (matched_content len=%u)\n",
-      config.name, sav_matched_content->len);
-  
-  /* Extract validation mode if present */
-  if (sav_validation_mode && sav_validation_mode->len == 1) {
-    memcpy(&validation_mode, pkt + sav_validation_mode->off, 1);
-  }
-  
-  /* Parse subTemplateList */
-  ret = parse_sav_sub_template_list(pkt + sav_matched_content->off, 
-                                     sav_matched_content->len, 
-                                     validation_mode, 
-                                     &rules, &rule_count);
-  
-  if (ret == 0 && rules != NULL && rule_count > 0) {
-    int i;
-    char log_buf[2048] = {0};
-    char rule_str[256];
-    const char *mode_names[] = {"interface-to-prefix", "prefix-to-interface", "prefix-to-as", "interface-to-as"};
+  /* If not found, try enterprise mode (PEN=0, IE 1-4) */
+  if (!sav_matched_content) {
+    sav_rule_type = ext_db_get_ie(tpl, 0, 1, 0);         /* Enterprise IE 1 */
+    sav_target_type = ext_db_get_ie(tpl, 0, 2, 0);       /* Enterprise IE 2 */
+    sav_matched_content = ext_db_get_ie(tpl, 0, 3, 0);   /* Enterprise IE 3 */
+    sav_action = ext_db_get_ie(tpl, 0, 4, 0);            /* Enterprise IE 4 */
     
-    /* Store in packet_ptrs for plugin access */
-    pptrs->sav_rules = rules;
-    pptrs->sav_rule_count = rule_count;
+    if (config.debug && sav_matched_content) {
+      Log(LOG_DEBUG, "DEBUG ( %s/core ): Found SAV IEs in enterprise mode (PEN=0)\n", config.name);
+    }
+  }
+  
+  /* If SAV matched content field not found, return */
+  if (!sav_matched_content) {
+    if (config.debug) {
+      Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV matched content IE not found in template\n", config.name);
+    }
+    return;
+  }
+  
+  /* Extract validation mode from target type field */
+  if (sav_target_type) {
+    validation_mode = *((uint8_t *)(data_ptr + sav_target_type->off));
     pptrs->sav_validation_mode = validation_mode;
+  }
+  
+  /* Get pointer to matched content (subTemplateList) data */
+  data_ptr += sav_matched_content->off;
+  
+  /* For variable-length fields, first bytes contain length (RFC 7011) */
+  if (sav_matched_content->len == 65535) {  /* Variable length indicator */
+    /* Decode variable-length field */
+    uint8_t first_byte = *data_ptr;
+    data_ptr++;
     
-    /* Log SAV data for verification */
-    snprintf(log_buf, sizeof(log_buf), "SAV: mode=%s, rules=[", 
-             validation_mode <= 3 ? mode_names[validation_mode] : "unknown");
+    if (first_byte == 255) {
+      /* Extended length: next 2 bytes */
+      content_len = ntohs(*((uint16_t *)data_ptr));
+      data_ptr += 2;
+    } else {
+      /* Short length: single byte */
+      content_len = first_byte;
+    }
+  } else {
+    content_len = sav_matched_content->len;
+  }
+  
+  if (config.debug) {
+    Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV matched content length: %u bytes\n", 
+        config.name, content_len);
     
-    for (i = 0; i < rule_count && i < 10; i++) {
-      /* Use template ID from validation_mode mapping: 901=if2prefix(IPv4), 902=if2prefix(IPv6) */
-      uint16_t template_id = 901; /* Simplified: assume IPv4 for logging */
-      if (sav_rule_to_string(&rules[i], template_id, rule_str, sizeof(rule_str)) == 0) {
-        strncat(log_buf, rule_str, sizeof(log_buf) - strlen(log_buf) - 1);
-        if (i < rule_count - 1) strncat(log_buf, ", ", sizeof(log_buf) - strlen(log_buf) - 1);
+    /* Hex dump first 32 bytes of subTemplateList data for debugging */
+    char hex_buf[256];
+    int dump_len = (content_len > 32) ? 32 : content_len;
+    char *hex_ptr = hex_buf;
+    for (int i = 0; i < dump_len; i++) {
+      hex_ptr += sprintf(hex_ptr, "%02x ", data_ptr[i]);
+    }
+    Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV data hex (ptr after varlen decode): %s\n", config.name, hex_buf);
+    Log(LOG_DEBUG, "DEBUG ( %s/core ): First 4 bytes: [0]=0x%02x [1]=0x%02x [2]=0x%02x [3]=0x%02x\n",
+        config.name, data_ptr[0], data_ptr[1], data_ptr[2], data_ptr[3]);
+  }
+  
+  /* Parse subTemplateList - data_ptr now points to semantic field (varlen already decoded) */
+  if (content_len > 0 && content_len < 65535) {
+    uint16_t sub_template_id = 0;
+    ret = parse_sav_sub_template_list(data_ptr, content_len, validation_mode, &rules, &rule_count, &sub_template_id);
+    
+    if (ret == 0 && rule_count > 0) {
+      pptrs->sav_rules = rules;
+      pptrs->sav_rule_count = rule_count;
+      
+      if (config.debug || 1) {  /* Always log SAV rules for demo purposes */
+        Log(LOG_INFO, "INFO ( %s/core ): SAV: Parsed %d rule(s) from sub-template %d\n", 
+            config.name, rule_count, sub_template_id);
+        
+        /* Log all rules using the actual sub-template ID */
+        for (int i = 0; i < rule_count && i < 10; i++) {  /* Max 10 for safety */
+          char rule_str[256];
+          sav_rule_to_string(&rules[i], sub_template_id, rule_str, sizeof(rule_str));
+          Log(LOG_INFO, "INFO ( %s/core ): SAV: Rule #%d: %s\n", config.name, i+1, rule_str);
+        }
+        if (rule_count > 10) {
+          Log(LOG_INFO, "INFO ( %s/core ): SAV: ... (%d more rules)\n", 
+              config.name, rule_count - 10);
+        }
+      }
+    } else {
+      if (config.debug) {
+        Log(LOG_DEBUG, "DEBUG ( %s/core ): Failed to parse SAV subTemplateList (ret=%d)\n", 
+            config.name, ret);
       }
     }
-    strncat(log_buf, "]", sizeof(log_buf) - strlen(log_buf) - 1);
-    
-    Log(LOG_INFO, "INFO ( %s/core ): %s\n", config.name, log_buf);
-  } else if (ret != 0) {
-    Log(LOG_WARNING, "WARN ( %s/core ): SAV: Failed to parse subTemplateList (ret=%d)\n",
-        config.name, ret);
   }
 }
 

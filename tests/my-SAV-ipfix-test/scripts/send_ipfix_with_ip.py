@@ -1,73 +1,92 @@
 #!/usr/bin/env python3
 """
-send_ipfix_with_ip.py - IPFIX SAV Message Sender with Full subTemplateList Support
+send_ipfix_with_ip.py - SAV IPFIX Message Sender (Hackathon Demo)
 
-Purpose:
+PURPOSE:
     Production-grade IPFIX v10 message generator implementing RFC 6313 subTemplateList
-    for SAV (Source Address Validation) Information Elements.
+    for SAV (Source Address Validation) based on draft-cao-opsawg-ipfix-sav-01.
     
-    NOTE: draft-cao-opsawg-ipfix-sav-01 is in DRAFT stage.
-    IE numbers and PEN below are EXPERIMENTAL PLACEHOLDERS.
+ENCODING MODES (FIXED):
+    1. Standard IANA (default): IE 30001-30004 (test placeholders)
+       Usage: send_ipfix_with_ip.py --sav-rules data.json
+       
+    2. Enterprise (RFC 7013): PEN=0, IE 1-4
+       Usage: send_ipfix_with_ip.py --sav-rules data.json --enterprise --pen 0
     
-Features:
+    ⚠️ WARNING: These IE numbers are FIXED for testing. Do NOT modify!
+    
+FEATURES:
     - RFC 7011 variable-length encoding (single-byte <255, extended ≥255)
-    - RFC 6313 subTemplateList with semantic field support
-    - 4 sub-template definitions (Templates 901-904)
-    - Enterprise PEN support (optional)
-    - Built-in IPFIX message validation
+    - RFC 6313 subTemplateList with semantic field (0x02 = oneOrMoreOf)
+    - 4 sub-template definitions (Templates 901-904):
+      * 901: IPv4 Interface-to-Prefix (9 bytes/rule)
+      * 902: IPv6 Interface-to-Prefix (21 bytes/rule)
+      * 903: IPv4 Prefix-to-Interface (9 bytes/rule)
+      * 904: IPv6 Prefix-to-Interface (21 bytes/rule)
+    - Dual encoding mode support (standard/enterprise)
     - JSON rule file or inline JSON input
     - IPv4 + IPv6 dual-stack support
     
-Templates:
-    Main Template (400):
-        - sourceIPv4Address (8), destinationIPv4Address (12)
-        - octetDeltaCount (1), packetDeltaCount (2)
-        - savRuleType (30001), savTargetType (30002)
-        - savMatchedContentList (30003, variable-length)
-        - savPolicyAction (30004)
+TEMPLATES:
+    Main Template 400 (SAV Flow Record):
+        Standard IANA mode:
+            Field                      IE     Type
+            ------------------------------------------------
+            sourceIPv4Address          8      uint32
+            destinationIPv4Address     12     uint32
+            octetDeltaCount            1      uint64
+            packetDeltaCount           2      uint64
+            savRuleType                30001  uint8
+            savTargetType              30002  uint8
+            savMatchedContentList      30003  varlen (subTemplateList)
+            savPolicyAction            30004  uint8
+        
+        Enterprise mode (--enterprise --pen 0):
+            Same as above, but SAV IEs use PEN=0 and IE 1-4
     
-    Sub-Templates:
-        - 901: IPv4 Interface-to-Prefix (9 bytes/rule)
-        - 902: IPv6 Interface-to-Prefix (21 bytes/rule)
-        - 903: IPv4 Prefix-to-Interface (9 bytes/rule)
-        - 904: IPv6 Prefix-to-Interface (21 bytes/rule)
+    Sub-Templates (RFC 6313):
+        901: IPv4 Interface→Prefix (9 bytes/rule)
+             - ingressInterface (10), sourceIPv4Prefix (44), sourceIPv4PrefixLength (8)
+        902: IPv6 Interface→Prefix (21 bytes/rule)
+             - ingressInterface (10), sourceIPv6Prefix (170), sourceIPv6PrefixLength (29)
+        903: IPv4 Prefix→Interface (9 bytes/rule)
+             - sourceIPv4Prefix (44), sourceIPv4PrefixLength (8), ingressInterface (10)
+        904: IPv6 Prefix→Interface (21 bytes/rule)
+             - sourceIPv6Prefix (170), sourceIPv6PrefixLength (29), ingressInterface (10)
 
-Usage:
-    # Basic usage with JSON file
+USAGE EXAMPLES:
+    # Standard IANA mode (default)
     ./send_ipfix_with_ip.py \\
-      --sav-rules ../test-data/sav_rules_example.json \\
-      --sub-template-id 901 \\
-      --use-complete-message
+      --host 127.0.0.1 --port 9995 \\
+      --sav-rules ../data/sav_example.json
     
-    # Inline JSON rules
+    # Enterprise mode (RFC 7013)
     ./send_ipfix_with_ip.py \\
-      --sav-rules '[{"interface_id":5001,"prefix":"198.51.100.0","prefix_len":24}]' \\
-      --sub-template-id 901 \\
-      --use-complete-message
+      --host 127.0.0.1 --port 9995 \\
+      --sav-rules ../data/sav_example.json \\
+      --enterprise --pen 0
     
-    # Full parameters
+    # Continuous sending (stress test)
     ./send_ipfix_with_ip.py \\
-      --src 10.0.1.100 --dst 10.0.2.1 \\
-      --sav-rules ../test-data/sav_rules_example.json \\
-      --sub-template-id 901 \\
-      --sav-rule-type 0 --sav-target-type 0 --sav-action 1 \\
-      --enterprise --pen 55555 \\
-      --use-complete-message
-
-Dependencies:
-    Standard library only (no external packages required)
-
-Standards:
-    RFC 7011 (IPFIX Protocol)
-    RFC 6313 (Export of Structured Data in IPFIX)
-    RFC 7012 (IPFIX Information Model)
-    draft-cao-opsawg-ipfix-sav-01
-
-Author:
-    Generated for pmacct SAV IPFIX testing
+      --sav-rules ../data/sav_example.json \\
+      --count 100 --interval 0.1
     
-Version:
-    2.0 (Phase 1A - Complete subTemplateList implementation)
+    # Different sub-template
+    ./send_ipfix_with_ip.py \\
+      --sav-rules ../test-data/sav_rules_ipv6_example.json \\
+      --sub-template-id 902
+
+DEPENDENCIES:
+    Python 3.6+ standard library only (no external packages)
+
+STANDARDS COMPLIANCE:
+    RFC 7011 - IPFIX Protocol Specification
+    RFC 6313 - Export of Structured Data in IPFIX
+    RFC 7013 - Guidelines for IPFIX IE Authors
+    draft-cao-opsawg-ipfix-sav-01 - SAV using IPFIX
+
+VERSION:
+    3.0 (Hackathon MVP - Dual encoding modes)
 """
 import argparse
 import socket
@@ -80,19 +99,29 @@ import json
 # ============================================================================
 # SAV IPFIX IE Definitions (draft-cao-opsawg-ipfix-sav-01)
 # ============================================================================
-# IMPORTANT: Draft uses STANDARD IANA IEs (NOT enterprise fields)
-# - No PEN (Private Enterprise Number)
-# - No enterprise bit (0x8000) in template encoding
-# - IE numbers are TBD (To Be Determined by IANA)
+# Two modes:
 #
-# For testing, using placeholder values 500-503
-# Update these when IANA assigns official numbers
+# 1. ENTERPRISE MODE (RFC 7013 compliant):
+#    - PEN = 0 (placeholder)
+#    - Enterprise bit (0x8000) set in template
+#    - IE numbers: 1-4 (enterprise-relative)
+#
+# 2. STANDARD IANA MODE (test placeholders):
+#    - No PEN, no enterprise bit
+#    - IE numbers: 30001-30004 (test placeholders for TBD1-TBD4)
 # ============================================================================
 
-SAV_IE_RULE_TYPE = 500           # TBD1: 0=allowlist, 1=blocklist
-SAV_IE_TARGET_TYPE = 501         # TBD2: 0=interface-based, 1=prefix-based  
-SAV_IE_MATCHED_CONTENT = 502     # TBD3: subTemplateList
-SAV_IE_POLICY_ACTION = 503       # TBD4: 0=permit, 1=discard, 2=rate-limit, 3=redirect
+# Enterprise mode (PEN=0, IE 1-4) - FIXED
+SAV_IE_RULE_TYPE_ENT = 1
+SAV_IE_TARGET_TYPE_ENT = 2
+SAV_IE_MATCHED_CONTENT_ENT = 3
+SAV_IE_POLICY_ACTION_ENT = 4
+
+# Standard IANA mode (30001-30004) - FIXED
+SAV_IE_RULE_TYPE = 30001
+SAV_IE_TARGET_TYPE = 30002
+SAV_IE_MATCHED_CONTENT = 30003
+SAV_IE_POLICY_ACTION = 30004
 
 
 # RFC 7011 variable-length encoding
@@ -326,36 +355,48 @@ def build_ipfix_message(template_id=400, seq=1, obs_domain=1234,
     version = 10
 
     # Template fields: include some standard IEs so the collector can
-    # build flows, then include the SAV testing IEs (temporary IDs).
-    # IANA-standard element IDs (common):
+    # build flows, then include the SAV testing IEs.
+    # Standard IANA element IDs:
     # 1 = octetDeltaCount (8 octets)
     # 2 = packetDeltaCount (8 octets)
     # 8 = sourceIPv4Address (4 octets)
     # 12 = destinationIPv4Address (4 octets)
-    # Then SAV fields 30001..30004 as in the original test.
+    # SAV fields: use enterprise mode (1-4) or standard mode (500-503)
+    
+    if enterprise:
+        # Enterprise mode: PEN=pen, IE 1-4
+        sav_rule_type_ie = SAV_IE_RULE_TYPE_ENT
+        sav_target_type_ie = SAV_IE_TARGET_TYPE_ENT
+        sav_matched_content_ie = SAV_IE_MATCHED_CONTENT_ENT
+        sav_policy_action_ie = SAV_IE_POLICY_ACTION_ENT
+    else:
+        # Standard IANA mode: IE 500-503 (placeholders for TBD1-TBD4)
+        sav_rule_type_ie = SAV_IE_RULE_TYPE
+        sav_target_type_ie = SAV_IE_TARGET_TYPE
+        sav_matched_content_ie = SAV_IE_MATCHED_CONTENT
+        sav_policy_action_ie = SAV_IE_POLICY_ACTION
 
     tpl_fields = [
         (8, 4),      # sourceIPv4Address
         (12, 4),     # destinationIPv4Address
         (1, 8),      # octetDeltaCount (uint64)
         (2, 8),      # packetDeltaCount (uint64)
-        (30001, 1),  # savRuleType
-        (30002, 1),  # savTargetType
-        (30003, 0xFFFF),  # savMatchedContentList (variable)
-        (30004, 1),  # savPolicyAction
+        (sav_rule_type_ie, 1),        # savRuleType
+        (sav_target_type_ie, 1),      # savTargetType
+        (sav_matched_content_ie, 0xFFFF),  # savMatchedContentList (variable)
+        (sav_policy_action_ie, 1),    # savPolicyAction
     ]
 
     tpl_rec = struct.pack('!HH', template_id, len(tpl_fields))
     for fid, flen in tpl_fields:
-        # If enterprise mode is requested and the field is a custom SAV IE
-        # (we choose to treat IDs >= 30000 as enterprise/custom), set
-        # the enterprise bit in the field ID and append the 4-byte PEN.
-        if enterprise and fid >= 30000:
-            ie_id = (fid & 0x7FFF) | 0x8000
-            tpl_rec += struct.pack('!HH', ie_id & 0xFFFF, flen & 0xFFFF)
+        # If enterprise mode and SAV IE (1-4), set enterprise bit and add PEN
+        if enterprise and 1 <= fid <= 4:
+            ie_id = fid | 0x8000  # Set enterprise bit
+            tpl_rec += struct.pack('!HH', ie_id, flen)
             tpl_rec += struct.pack('!I', pen)
         else:
-            tpl_rec += struct.pack('!HH', fid & 0xFFFF, flen & 0xFFFF)
+            # Standard IANA IEs (8, 12, 1, 2) or standard SAV IEs (500-503)
+            tpl_rec += struct.pack('!HH', fid, flen)
 
     tpl_set_id = 2
     tpl_set_len = 4 + len(tpl_rec)

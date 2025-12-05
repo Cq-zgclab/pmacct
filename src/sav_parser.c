@@ -4,18 +4,51 @@
 */
 
 /*
-    SAV (Source Address Validation) Parser
-    RFC 6313 subTemplateList implementation for draft-cao-opsawg-ipfix-sav-01
-*/
+ * SAV (Source Address Validation) Parser
+ * 
+ * PURPOSE:
+ *   Parse RFC 6313 subTemplateList structures containing SAV rules from
+ *   IPFIX messages per draft-cao-opsawg-ipfix-sav-01.
+ *
+ * FUNCTIONALITY:
+ *   - Decode RFC 7011 variable-length fields
+ *   - Parse subTemplateList semantic field and template ID
+ *   - Extract SAV rules from 4 sub-template formats (901-904)
+ *   - Convert rules to human-readable strings for debugging
+ *
+ * SUPPORTED SUB-TEMPLATES:
+ *   901: IPv4 Interface→Prefix (interface_id + ipv4_prefix + prefix_len)
+ *   902: IPv6 Interface→Prefix (interface_id + ipv6_prefix + prefix_len)
+ *   903: IPv4 Prefix→Interface (ipv4_prefix + prefix_len + interface_id)
+ *   904: IPv6 Prefix→Interface (ipv6_prefix + prefix_len + interface_id)
+ *
+ * COMPLIANCE:
+ *   RFC 6313 - Export of Structured Data in IPFIX
+ *   RFC 7011 - IPFIX Protocol Specification (variable-length encoding)
+ *   draft-cao-opsawg-ipfix-sav-01
+ *
+ * AUTHOR:
+ *   Generated for pmacct SAV IPFIX integration (Hackathon MVP)
+ *
+ * VERSION:
+ *   1.0 (2025-12-05)
+ */
 
 #include "pmacct.h"
 #include "../include/sav_parser.h"
 #include "nfv9_template.h"
 #include <arpa/inet.h>
 
-/**
- * Decode RFC 7011 variable-length field
- * Returns the decoded length and advances the data pointer
+/*
+ * decode_varlen - Decode RFC 7011 variable-length field
+ * 
+ * Encoding rules:
+ *   - If length < 255: encoded as single byte
+ *   - If length >= 255: first byte = 0xFF, followed by 2-byte length (network order)
+ *
+ * @param data      Pointer to data pointer (will be advanced)
+ * @param remaining Pointer to remaining bytes counter (will be decremented)
+ * @return Decoded length value, or 0 on error
  */
 static uint16_t decode_varlen(u_char **data, uint16_t *remaining) {
     uint16_t len;
@@ -108,7 +141,7 @@ int parse_sav_rule(u_char *data, uint16_t template_id, struct sav_rule *rule) {
  * Parse RFC 6313 subTemplateList
  */
 int parse_sav_sub_template_list(u_char *data, uint16_t len, uint8_t validation_mode,
-                                  struct sav_rule **rules, int *count) {
+                                  struct sav_rule **rules, int *count, uint16_t *template_id_out) {
     u_char *ptr = data;
     uint16_t remaining = len;
     uint16_t total_len, sub_tpl_id, record_size;
@@ -124,13 +157,9 @@ int parse_sav_sub_template_list(u_char *data, uint16_t len, uint8_t validation_m
     *rules = NULL;
     *count = 0;
     
-    /* Decode variable-length total length */
-    total_len = decode_varlen(&ptr, &remaining);
-    if (total_len == 0 || total_len > remaining) {
-        Log(LOG_WARNING, "WARN ( %s/core ): parse_sav_sub_template_list(): invalid varlen %u (remaining %u)\n",
-            config.name, total_len, remaining);
-        return -1;
-    }
+    /* NOTE: Variable-length encoding already decoded by caller.
+     * data points to semantic field, len is the total subTemplateList content length.
+     */
     
     /* Read semantic (1 byte) */
     if (remaining < 1) {
@@ -141,13 +170,30 @@ int parse_sav_sub_template_list(u_char *data, uint16_t len, uint8_t validation_m
     semantic = *ptr++;
     remaining--;
     
+    if (config.debug) {
+        Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV subTemplateList semantic: 0x%02x\n",
+            config.name, semantic);
+    }
+    
     /* Read sub-template ID (2 bytes) */
     if (remaining < 2) {
         Log(LOG_WARNING, "WARN ( %s/core ): parse_sav_sub_template_list(): insufficient data for template ID\n",
             config.name);
         return -1;
     }
+    
+    if (config.debug) {
+        Log(LOG_DEBUG, "DEBUG ( %s/core ): Template ID bytes: [0]=0x%02x [1]=0x%02x\n",
+            config.name, ptr[0], ptr[1]);
+    }
+    
     sub_tpl_id = ntohs(*(uint16_t*)ptr);
+    
+    if (config.debug) {
+        Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV sub-template ID after ntohs: %u (0x%04x)\n",
+            config.name, sub_tpl_id, sub_tpl_id);
+    }
+    
     ptr += 2;
     remaining -= 2;
     
@@ -173,14 +219,14 @@ int parse_sav_sub_template_list(u_char *data, uint16_t len, uint8_t validation_m
     }
     
     /* Calculate number of rules */
-    /* total_len includes semantic(1) + template_id(2) + records */
-    if (total_len < 3) {
-        Log(LOG_WARNING, "WARN ( %s/core ): parse_sav_sub_template_list(): total_len too small %u\n",
-            config.name, total_len);
+    /* len includes semantic(1) + template_id(2) + records */
+    if (len < 3) {
+        Log(LOG_WARNING, "WARN ( %s/core ): parse_sav_sub_template_list(): len too small %u\n",
+            config.name, len);
         return -1;
     }
     
-    num_rules = (total_len - 3) / record_size;
+    num_rules = (len - 3) / record_size;
     if (num_rules <= 0) {
         Log(LOG_INFO, "INFO ( %s/core ): parse_sav_sub_template_list(): no SAV rules in subTemplateList\n",
             config.name);
@@ -214,6 +260,11 @@ int parse_sav_sub_template_list(u_char *data, uint16_t len, uint8_t validation_m
     }
     
     *count = num_rules;
+    
+    /* Return template ID if requested */
+    if (template_id_out) {
+        *template_id_out = sub_tpl_id;
+    }
     
     Log(LOG_DEBUG, "DEBUG ( %s/core ): parse_sav_sub_template_list(): parsed %d rules (semantic=%u, tpl_id=%u)\n",
         config.name, num_rules, semantic, sub_tpl_id);
