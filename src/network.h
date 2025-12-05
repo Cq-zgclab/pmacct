@@ -427,6 +427,10 @@ struct packet_ptrs {
 #if defined (WITH_NDPI)
   pm_class2_t ndpi_class;
 #endif
+  /* SAV (Source Address Validation) - RFC 6313 */
+  struct sav_rule *sav_rules;     /* Parsed SAV rules from subTemplateList */
+  int sav_rule_count;              /* Number of SAV rules */
+  u_int8_t sav_validation_mode;    /* SAV validation mode (0-3) */
 };
 
 struct pkt_primitives {

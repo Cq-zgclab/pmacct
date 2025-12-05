@@ -86,6 +86,7 @@ struct chained_cache {
   u_int8_t prep_valid;
   struct timeval basetime;
   struct pkt_stitching *stitch;
+  struct packet_ptrs *pptrs; /* SAV: pointer to packet_ptrs for SAV rules access */
   struct chained_cache *next;
 };
 #endif

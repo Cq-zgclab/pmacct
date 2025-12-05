@@ -1384,6 +1384,10 @@ void P_cache_purge(struct chained_cache *queue[], int index, int safe_action)
 	int idx;
 
 	for (idx = 0; idx < N_PRIMITIVES && cjhandler[idx]; idx++) cjhandler[idx](json_obj, queue[j]);
+        
+        /* Add SAV fields if present */
+        compose_json_sav_fields(json_obj, queue[j]);
+        
         if (json_obj) write_and_free_json(f, json_obj);
 #endif
       }

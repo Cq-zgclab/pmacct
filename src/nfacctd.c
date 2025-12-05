@@ -1803,6 +1803,11 @@ void process_sav_fields(u_char *pkt, struct template_cache_entry *tpl, struct pa
   uint8_t validation_mode = 0;
   int ret;
   
+  /* Initialize SAV fields */
+  pptrs->sav_rules = NULL;
+  pptrs->sav_rule_count = 0;
+  pptrs->sav_validation_mode = 0;
+  
   /* Check for SAV enterprise fields (PEN 45575) */
   sav_matched_content = ext_db_get_ie(tpl, SAV_ENTERPRISE_ID, SAV_IE_MATCHED_CONTENT, 0);
   sav_validation_mode = ext_db_get_ie(tpl, SAV_ENTERPRISE_ID, SAV_IE_RULE_TYPE, 0);
@@ -1823,56 +1828,13 @@ void process_sav_fields(u_char *pkt, struct template_cache_entry *tpl, struct pa
                                      &rules, &rule_count);
   
   if (ret == 0 && rules != NULL && rule_count > 0) {
-    char mode_str[32];
-    int i;
+    /* Store in packet_ptrs for plugin access */
+    pptrs->sav_rules = rules;
+    pptrs->sav_rule_count = rule_count;
+    pptrs->sav_validation_mode = validation_mode;
     
-    /* Convert validation mode to string */
-    switch (validation_mode) {
-      case SAV_MODE_INTERFACE_TO_PREFIX: strcpy(mode_str, "interface-to-prefix"); break;
-      case SAV_MODE_PREFIX_TO_INTERFACE: strcpy(mode_str, "prefix-to-interface"); break;
-      case SAV_MODE_PREFIX_TO_AS: strcpy(mode_str, "prefix-to-as"); break;
-      case SAV_MODE_INTERFACE_TO_AS: strcpy(mode_str, "interface-to-as"); break;
-      default: snprintf(mode_str, sizeof(mode_str), "unknown(%u)", validation_mode); break;
-    }
-    
-    Log(LOG_INFO, "INFO ( %s/core ): SAV: Parsed %d rules (mode=%s)\n", 
-        config.name, rule_count, mode_str);
-    
-    /* Log each rule */
-    for (i = 0; i < rule_count; i++) {
-      char ip_str[INET6_ADDRSTRLEN];
-      uint16_t sub_tpl_id = 0;
-      
-      /* Determine sub-template ID from first rule (all rules use same template) */
-      if (i == 0) {
-        /* Heuristic: check if IPv4 (9 bytes) or IPv6 (21 bytes) */
-        if (sav_matched_content->len > 10) {
-          /* Could be IPv6, check prefix length range */
-          if (rules[i].prefix_len <= 32) {
-            sub_tpl_id = SAV_TPL_IPV4_IF2PREFIX; /* or PREFIX2IF, doesn't matter for logging */
-          } else {
-            sub_tpl_id = SAV_TPL_IPV6_IF2PREFIX;
-          }
-        } else {
-          sub_tpl_id = SAV_TPL_IPV4_IF2PREFIX;
-        }
-      }
-      
-      /* Format IP address */
-      if (rules[i].prefix_len <= 32 && rules[i].prefix.ipv4[0] != 0) {
-        struct in_addr addr;
-        addr.s_addr = htonl(rules[i].prefix.ipv4[0]);
-        inet_ntop(AF_INET, &addr, ip_str, sizeof(ip_str));
-      } else {
-        inet_ntop(AF_INET6, rules[i].prefix.ipv6, ip_str, sizeof(ip_str));
-      }
-      
-      Log(LOG_INFO, "INFO ( %s/core ): SAV Rule %d: interface=%u prefix=%s/%u\n",
-          config.name, i + 1, rules[i].interface_id, ip_str, rules[i].prefix_len);
-    }
-    
-    /* Free rules */
-    free_sav_rules(rules);
+    Log(LOG_DEBUG, "DEBUG ( %s/core ): SAV: Parsed %d rules (mode=%u)\n", 
+        config.name, rule_count, validation_mode);
   } else if (ret != 0) {
     Log(LOG_WARNING, "WARN ( %s/core ): SAV: Failed to parse subTemplateList (ret=%d)\n",
         config.name, ret);
@@ -3457,6 +3419,13 @@ void process_v9_packet(unsigned char *pkt, u_int16_t len, struct packet_ptrs_vec
         }
 
         finalize_record:
+        /* Cleanup SAV rules after plugin execution */
+        if (pptrs->sav_rules) {
+          free_sav_rules(pptrs->sav_rules);
+          pptrs->sav_rules = NULL;
+          pptrs->sav_rule_count = 0;
+        }
+        
         pkt += tpl->len;
         flowoff += tpl->len;
 	

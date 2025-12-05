@@ -1909,3 +1909,56 @@ void compose_json_path_delay_max_usec(json_t *obj, struct chained_cache *cc)
 {
   json_object_set_new_nocheck(obj, "path_delay_max_usec", json_integer((json_int_t)cc->pmpls->path_delay_max_usec));
 }
+
+void compose_json_sav_fields(json_t *obj, struct chained_cache *cc)
+{
+  struct packet_ptrs *pptrs = cc->pptrs;
+  
+  if (pptrs && pptrs->sav_rules && pptrs->sav_rule_count > 0) {
+    const char *mode_str;
+    json_t *rules_array;
+    int i;
+    
+    /* Add validation mode */
+    switch (pptrs->sav_validation_mode) {
+      case 0: mode_str = "interface-to-prefix"; break;
+      case 1: mode_str = "prefix-to-interface"; break;
+      case 2: mode_str = "prefix-to-as"; break;
+      case 3: mode_str = "interface-to-as"; break;
+      default: mode_str = "unknown"; break;
+    }
+    json_object_set_new_nocheck(obj, "sav_validation_mode", json_string(mode_str));
+    
+    /* Create rules array */
+    rules_array = json_array();
+    
+    for (i = 0; i < pptrs->sav_rule_count; i++) {
+      json_t *rule_obj = json_object();
+      char prefix_str[128];
+      char ip_str[INET6_ADDRSTRLEN];
+      
+      /* Add interface_id */
+      json_object_set_new_nocheck(rule_obj, "interface_id", 
+                                    json_integer((json_int_t)pptrs->sav_rules[i].interface_id));
+      
+      /* Format IP prefix */
+      if (pptrs->sav_rules[i].prefix_len <= 32 && pptrs->sav_rules[i].prefix.ipv4[0] != 0) {
+        /* IPv4 */
+        struct in_addr addr;
+        addr.s_addr = htonl(pptrs->sav_rules[i].prefix.ipv4[0]);
+        inet_ntop(AF_INET, &addr, ip_str, sizeof(ip_str));
+      } else {
+        /* IPv6 */
+        inet_ntop(AF_INET6, pptrs->sav_rules[i].prefix.ipv6, ip_str, sizeof(ip_str));
+      }
+      
+      snprintf(prefix_str, sizeof(prefix_str), "%s/%u", 
+               ip_str, pptrs->sav_rules[i].prefix_len);
+      json_object_set_new_nocheck(rule_obj, "prefix", json_string(prefix_str));
+      
+      json_array_append_new(rules_array, rule_obj);
+    }
+    
+    json_object_set_new_nocheck(obj, "sav_matched_rules", rules_array);
+  }
+}
