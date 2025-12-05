@@ -48,6 +48,7 @@
 #ifdef WITH_REDIS
 #include "ha.h"
 #endif
+#include "sav_parser.h"
 
 /* Global variables */
 struct host_addr debug_a;
@@ -1790,7 +1791,93 @@ void process_v5_packet(unsigned char *pkt, u_int16_t len, struct packet_ptrs *pp
     xflow_status_table.tot_bad_datagrams++;
     return;
   }
-} 
+}
+
+/* SAV (Source Address Validation) Processing */
+void process_sav_fields(u_char *pkt, struct template_cache_entry *tpl, struct packet_ptrs *pptrs)
+{
+  struct utpl_field *sav_matched_content = NULL;
+  struct utpl_field *sav_validation_mode = NULL;
+  struct sav_rule *rules = NULL;
+  int rule_count = 0;
+  uint8_t validation_mode = 0;
+  int ret;
+  
+  /* Check for SAV enterprise fields (PEN 45575) */
+  sav_matched_content = ext_db_get_ie(tpl, SAV_ENTERPRISE_ID, SAV_IE_MATCHED_CONTENT, 0);
+  sav_validation_mode = ext_db_get_ie(tpl, SAV_ENTERPRISE_ID, SAV_IE_RULE_TYPE, 0);
+  
+  if (!sav_matched_content || sav_matched_content->len == 0) {
+    return; /* No SAV data in this record */
+  }
+  
+  /* Extract validation mode if present */
+  if (sav_validation_mode && sav_validation_mode->len == 1) {
+    memcpy(&validation_mode, pkt + sav_validation_mode->off, 1);
+  }
+  
+  /* Parse subTemplateList */
+  ret = parse_sav_sub_template_list(pkt + sav_matched_content->off, 
+                                     sav_matched_content->len, 
+                                     validation_mode, 
+                                     &rules, &rule_count);
+  
+  if (ret == 0 && rules != NULL && rule_count > 0) {
+    char mode_str[32];
+    int i;
+    
+    /* Convert validation mode to string */
+    switch (validation_mode) {
+      case SAV_MODE_INTERFACE_TO_PREFIX: strcpy(mode_str, "interface-to-prefix"); break;
+      case SAV_MODE_PREFIX_TO_INTERFACE: strcpy(mode_str, "prefix-to-interface"); break;
+      case SAV_MODE_PREFIX_TO_AS: strcpy(mode_str, "prefix-to-as"); break;
+      case SAV_MODE_INTERFACE_TO_AS: strcpy(mode_str, "interface-to-as"); break;
+      default: snprintf(mode_str, sizeof(mode_str), "unknown(%u)", validation_mode); break;
+    }
+    
+    Log(LOG_INFO, "INFO ( %s/core ): SAV: Parsed %d rules (mode=%s)\n", 
+        config.name, rule_count, mode_str);
+    
+    /* Log each rule */
+    for (i = 0; i < rule_count; i++) {
+      char ip_str[INET6_ADDRSTRLEN];
+      uint16_t sub_tpl_id = 0;
+      
+      /* Determine sub-template ID from first rule (all rules use same template) */
+      if (i == 0) {
+        /* Heuristic: check if IPv4 (9 bytes) or IPv6 (21 bytes) */
+        if (sav_matched_content->len > 10) {
+          /* Could be IPv6, check prefix length range */
+          if (rules[i].prefix_len <= 32) {
+            sub_tpl_id = SAV_TPL_IPV4_IF2PREFIX; /* or PREFIX2IF, doesn't matter for logging */
+          } else {
+            sub_tpl_id = SAV_TPL_IPV6_IF2PREFIX;
+          }
+        } else {
+          sub_tpl_id = SAV_TPL_IPV4_IF2PREFIX;
+        }
+      }
+      
+      /* Format IP address */
+      if (rules[i].prefix_len <= 32 && rules[i].prefix.ipv4[0] != 0) {
+        struct in_addr addr;
+        addr.s_addr = htonl(rules[i].prefix.ipv4[0]);
+        inet_ntop(AF_INET, &addr, ip_str, sizeof(ip_str));
+      } else {
+        inet_ntop(AF_INET6, rules[i].prefix.ipv6, ip_str, sizeof(ip_str));
+      }
+      
+      Log(LOG_INFO, "INFO ( %s/core ): SAV Rule %d: interface=%u prefix=%s/%u\n",
+          config.name, i + 1, rules[i].interface_id, ip_str, rules[i].prefix_len);
+    }
+    
+    /* Free rules */
+    free_sav_rules(rules);
+  } else if (ret != 0) {
+    Log(LOG_WARNING, "WARN ( %s/core ): SAV: Failed to parse subTemplateList (ret=%d)\n",
+        config.name, ret);
+  }
+}
 
 void process_v9_packet(unsigned char *pkt, u_int16_t len, struct packet_ptrs_vector *pptrsv,
 		struct plugin_requests *req, u_int16_t version, struct NF_dissect *tee_dissect,
@@ -2644,6 +2731,10 @@ void process_v9_packet(unsigned char *pkt, u_int16_t len, struct packet_ptrs_vec
 	  if (config.bgp_daemon_src_local_pref_map) NF_find_id((struct id_table *)pptrs->blp_table, pptrs, &pptrs->blp, NULL);
 	  if (config.bgp_daemon_src_med_map) NF_find_id((struct id_table *)pptrs->bmed_table, pptrs, &pptrs->bmed, NULL);
           if (config.bmp_daemon) bmp_srcdst_lookup(pptrs, NULL);
+          
+          /* Process SAV (Source Address Validation) fields if present */
+          process_sav_fields(pkt, tpl, pptrs);
+          
           exec_plugins(pptrs, req);
 	  break;
 	case PM_FTYPE_IPV6:

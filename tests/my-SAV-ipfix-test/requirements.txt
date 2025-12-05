@@ -1,2 +1,0 @@
-# No external requirements for the simple UDP sender (uses Python stdlib)
-# If you later switch to scapy, add scapy here (e.g. scapy==2.4.5)

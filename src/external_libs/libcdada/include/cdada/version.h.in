@@ -1,0 +1,67 @@
+/*
+Copyright (c) 2020, Marc Sune Clos
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+#ifndef __CDADA_VERSION_H__
+#define __CDADA_VERSION_H__
+
+#define CDADA_VERSION_MAJOR	"@CDADA_VERSION_MAJOR@"
+#define CDADA_VERSION_MINOR	"@CDADA_VERSION_MINOR@"
+#define CDADA_VERSION_PATCH	"@CDADA_VERSION_PATCH@"
+#define CDADA_VERSION		"@CDADA_VERSION_NORMALIZED@"
+#define CDADA_BUILD		"@CDADA_BUILD@"
+
+/**
+* @brief Return libcdada's version
+*
+* The version has the format vX.Y.Z, where:
+*
+* X: major
+* Y: minor
+* Z: patch
+*/
+const char* cdada_get_ver();
+
+/**
+* Return the MAJOR number of libcdada's version
+*/
+const char* cdada_get_ver_maj();
+
+/**
+* Return the MINOR number of libcdada's version
+*/
+const char* cdada_get_ver_min();
+
+/**
+* Return the PATCH number of libcdada's version
+*/
+const char* cdada_get_ver_patch();
+
+/**
+* @brief Return libcdada's build (git hash)
+*/
+const char* cdada_get_build();
+
+#endif /* __CDADA_VERSION_H__ */

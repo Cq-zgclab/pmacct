@@ -1,6 +1,0 @@
-FROM python:3.11-slim
-WORKDIR /app
-COPY send_ipfix.py /app/send_ipfix.py
-RUN pip install --no-cache-dir \
-    && chmod +x /app/send_ipfix.py
-ENTRYPOINT ["python3", "/app/send_ipfix.py"]

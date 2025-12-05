@@ -14,10 +14,17 @@
 /* SAV IPFIX Information Elements (Enterprise ID: 45575) */
 #define SAV_ENTERPRISE_ID               45575
 
-#define SAV_RULE_TYPE                   900
-#define SAV_TARGET_TYPE                 901
-#define SAV_MATCHED_CONTENT             902
-#define SAV_POLICY_ACTION               903
+/* SAV Information Element IDs (draft-cao-opsawg-ipfix-sav-01) */
+#define SAV_IE_RULE_TYPE                900   /* sav_rule_type */
+#define SAV_IE_TARGET_TYPE              901   /* sav_target_type */
+#define SAV_IE_MATCHED_CONTENT          902   /* sav_matched_content (subTemplateList) */
+#define SAV_IE_POLICY_ACTION            903   /* sav_policy_action */
+
+/* Legacy compatibility */
+#define SAV_RULE_TYPE                   SAV_IE_RULE_TYPE
+#define SAV_TARGET_TYPE                 SAV_IE_TARGET_TYPE
+#define SAV_MATCHED_CONTENT             SAV_IE_MATCHED_CONTENT
+#define SAV_POLICY_ACTION               SAV_IE_POLICY_ACTION
 
 /* SAV Sub-Template IDs */
 #define SAV_TPL_IPV4_IF2PREFIX          901  /* interface_id, ipv4_prefix, prefix_len */
