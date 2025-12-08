@@ -55,6 +55,11 @@ struct host_addr debug_a;
 char debug_agent_addr[50];
 u_int16_t debug_agent_port;
 
+/* SAV global cache (Hackathon MVP - for plugin access) */
+struct sav_rule *global_last_sav_rules = NULL;
+int global_last_sav_rule_count = 0;
+u_int8_t global_last_sav_validation_mode = 0;
+
 /* Functions */
 void usage_daemon(char *prog_name)
 {
@@ -1898,6 +1903,11 @@ void process_sav_fields(u_char *pkt, struct template_cache_entry *tpl, struct pa
       pptrs->sav_rules = rules;
       pptrs->sav_rule_count = rule_count;
       
+      /* Update global cache for async plugin access (Hackathon MVP) */
+      global_last_sav_rules = rules;
+      global_last_sav_rule_count = rule_count;
+      global_last_sav_validation_mode = pptrs->sav_validation_mode;
+      
       if (config.debug || 1) {  /* Always log SAV rules for demo purposes */
         Log(LOG_INFO, "INFO ( %s/core ): SAV: Parsed %d rule(s) from sub-template %d\n", 
             config.name, rule_count, sub_template_id);
@@ -1911,6 +1921,33 @@ void process_sav_fields(u_char *pkt, struct template_cache_entry *tpl, struct pa
         if (rule_count > 10) {
           Log(LOG_INFO, "INFO ( %s/core ): SAV: ... (%d more rules)\n", 
               config.name, rule_count - 10);
+        }
+        
+        /* Hackathon MVP: Direct JSON output to file (bypassing plugin IPC limitation) */
+        FILE *sav_json_file = fopen("/tmp/sav_output.json", "a");
+        if (sav_json_file) {
+          const char *mode_names[] = {"interface-to-prefix", "prefix-to-interface", "prefix-to-as", "interface-to-as"};
+          fprintf(sav_json_file, "{\"timestamp\":%ld,\"sav_validation_mode\":\"%s\",\"sav_matched_rules\":[",
+                  (long)time(NULL), validation_mode < 4 ? mode_names[validation_mode] : "unknown");
+          
+          for (int i = 0; i < rule_count; i++) {
+            char ip_str[INET6_ADDRSTRLEN];
+            
+            /* Format IP address */
+            if (rules[i].prefix_len <= 32 && rules[i].prefix.ipv4[0] != 0) {
+              struct in_addr addr;
+              addr.s_addr = htonl(rules[i].prefix.ipv4[0]);
+              inet_ntop(AF_INET, &addr, ip_str, sizeof(ip_str));
+            } else {
+              inet_ntop(AF_INET6, rules[i].prefix.ipv6, ip_str, sizeof(ip_str));
+            }
+            
+            fprintf(sav_json_file, "%s{\"interface_id\":%u,\"prefix\":\"%s/%u\"}", 
+                    i > 0 ? "," : "", rules[i].interface_id, ip_str, rules[i].prefix_len);
+          }
+          fprintf(sav_json_file, "]}\n");
+          fclose(sav_json_file);
+          Log(LOG_INFO, "INFO ( %s/core ): SAV JSON written to /tmp/sav_output.json\n", config.name);
         }
       }
     } else {
@@ -3500,12 +3537,18 @@ void process_v9_packet(unsigned char *pkt, u_int16_t len, struct packet_ptrs_vec
         }
 
         finalize_record:
+        /* TODO: SAV rules cleanup - currently delayed to allow async plugin access
+         * This is a temporary solution for Hackathon MVP. Production code should
+         * implement proper lifecycle management (e.g., reference counting or
+         * deep copy into plugin cache). Memory leak acceptable for demo purposes. */
+        #if 0
         /* Cleanup SAV rules after plugin execution */
         if (pptrs->sav_rules) {
           free_sav_rules(pptrs->sav_rules);
           pptrs->sav_rules = NULL;
           pptrs->sav_rule_count = 0;
         }
+        #endif
         
         pkt += tpl->len;
         flowoff += tpl->len;

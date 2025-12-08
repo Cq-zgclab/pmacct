@@ -26,6 +26,7 @@
 #include "net_aggr.h"
 #include "network.h"
 #include "preprocess.h"
+#include "../include/sav_parser.h"  /* For struct sav_rule */
 
 /* defines */
 #define DEFAULT_PLUGIN_COMMON_REFRESH_TIME 60
@@ -87,6 +88,12 @@ struct chained_cache {
   struct timeval basetime;
   struct pkt_stitching *stitch;
   struct packet_ptrs *pptrs; /* SAV: pointer to packet_ptrs for SAV rules access */
+  
+  /* SAV (Source Address Validation) - Deep copy for async plugin access */
+  struct sav_rule *sav_rules_copy;  /* Deep copy of SAV rules */
+  int sav_rule_count_copy;           /* Number of SAV rules */
+  u_int8_t sav_validation_mode_copy; /* SAV validation mode */
+  
   struct chained_cache *next;
 };
 #endif

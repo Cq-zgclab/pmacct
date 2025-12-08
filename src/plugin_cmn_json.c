@@ -1911,22 +1911,41 @@ void compose_json_path_delay_max_usec(json_t *obj, struct chained_cache *cc)
   json_object_set_new_nocheck(obj, "path_delay_max_usec", json_integer((json_int_t)cc->pmpls->path_delay_max_usec));
 }
 
+/* Global SAV data cache (Hackathon MVP - thread-unsafe but acceptable for demo) */
+extern struct sav_rule *global_last_sav_rules;
+extern int global_last_sav_rule_count;
+extern u_int8_t global_last_sav_validation_mode;
+
 void compose_json_sav_fields(json_t *obj, struct chained_cache *cc)
 {
   struct packet_ptrs *pptrs = NULL;
+  struct sav_rule *rules = NULL;
+  int rule_count = 0;
+  u_int8_t validation_mode = 0;
   
   /* SAV: Get pptrs from chained_cache if available */
   if (cc) {
     pptrs = cc->pptrs;
   }
   
+  /* Try to get SAV data from pptrs first, then fall back to global cache */
   if (pptrs && pptrs->sav_rules && pptrs->sav_rule_count > 0) {
+    rules = pptrs->sav_rules;
+    rule_count = pptrs->sav_rule_count;
+    validation_mode = pptrs->sav_validation_mode;
+  } else if (global_last_sav_rules && global_last_sav_rule_count > 0) {
+    rules = global_last_sav_rules;
+    rule_count = global_last_sav_rule_count;
+    validation_mode = global_last_sav_validation_mode;
+  }
+  
+  if (rules && rule_count > 0) {
     const char *mode_str;
     json_t *rules_array;
     int i;
     
     /* Add validation mode */
-    switch (pptrs->sav_validation_mode) {
+    switch (validation_mode) {
       case 0: mode_str = "interface-to-prefix"; break;
       case 1: mode_str = "prefix-to-interface"; break;
       case 2: mode_str = "prefix-to-as"; break;
@@ -1938,28 +1957,28 @@ void compose_json_sav_fields(json_t *obj, struct chained_cache *cc)
     /* Create rules array */
     rules_array = json_array();
     
-    for (i = 0; i < pptrs->sav_rule_count; i++) {
+    for (i = 0; i < rule_count; i++) {
       json_t *rule_obj = json_object();
       char prefix_str[128];
       char ip_str[INET6_ADDRSTRLEN];
       
       /* Add interface_id */
       json_object_set_new_nocheck(rule_obj, "interface_id", 
-                                    json_integer((json_int_t)pptrs->sav_rules[i].interface_id));
+                                    json_integer((json_int_t)rules[i].interface_id));
       
       /* Format IP prefix */
-      if (pptrs->sav_rules[i].prefix_len <= 32 && pptrs->sav_rules[i].prefix.ipv4[0] != 0) {
+      if (rules[i].prefix_len <= 32 && rules[i].prefix.ipv4[0] != 0) {
         /* IPv4 */
         struct in_addr addr;
-        addr.s_addr = htonl(pptrs->sav_rules[i].prefix.ipv4[0]);
+        addr.s_addr = htonl(rules[i].prefix.ipv4[0]);
         inet_ntop(AF_INET, &addr, ip_str, sizeof(ip_str));
       } else {
         /* IPv6 */
-        inet_ntop(AF_INET6, pptrs->sav_rules[i].prefix.ipv6, ip_str, sizeof(ip_str));
+        inet_ntop(AF_INET6, rules[i].prefix.ipv6, ip_str, sizeof(ip_str));
       }
       
       snprintf(prefix_str, sizeof(prefix_str), "%s/%u", 
-               ip_str, pptrs->sav_rules[i].prefix_len);
+               ip_str, rules[i].prefix_len);
       json_object_set_new_nocheck(rule_obj, "prefix", json_string(prefix_str));
       
       json_array_append_new(rules_array, rule_obj);

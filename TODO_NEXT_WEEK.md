@@ -52,10 +52,22 @@ python3 send_ipfix_with_ip.py --host 127.0.0.1 --port 9995 \
 
 ---
 
-#### 2. JSON输出增强 (~4-6小时) - **下一个任务**
+#### 2. JSON输出增强 (~4-6小时) - **🔄 进行中**
 **目标**: 将SAV规则输出到JSON格式
 
-**挑战**: pmacct IPC机制vlen字段限制
+**发现** (2025-12-08):
+- ✅ `compose_json_sav_fields()` already exists in plugin_cmn_json.c (lines 1914-1970)
+- ✅ JSON serialization logic complete (sav_validation_mode + sav_matched_rules array)
+- ✅ `print_plugin.c` already calls compose_json_sav_fields() at line 1389
+- ⚠️ **Root Cause Found**: SAV data lifetime issue
+  * process_sav_fields() parses → pptrs->sav_rules allocated
+  * exec_plugins() sends data to print plugin
+  * free_sav_rules() immediately frees memory at line 3505 (finalize_record label)
+  * Print plugin asynchronous → accesses freed memory in compose_json_sav_fields()
+  
+**Solution**: Deep copy SAV data into chained_cache (similar to vlen_prims_copy mechanism)
+
+**挑战**: pmacct IPC机制 - 需要在cache中保存SAV数据副本
 
 def send_via_sctp(host, port, message):
     sock = sctp.sctpsocket_tcp(socket.AF_INET)
