@@ -52,22 +52,49 @@ python3 send_ipfix_with_ip.py --host 127.0.0.1 --port 9995 \
 
 ---
 
-#### 2. JSON输出增强 (~4-6小时) - **🔄 进行中**
+#### 2. JSON输出增强 (~4-6小时) - ✅ **2025-12-08完成 (MVP)**
 **目标**: 将SAV规则输出到JSON格式
 
-**发现** (2025-12-08):
-- ✅ `compose_json_sav_fields()` already exists in plugin_cmn_json.c (lines 1914-1970)
-- ✅ JSON serialization logic complete (sav_validation_mode + sav_matched_rules array)
-- ✅ `print_plugin.c` already calls compose_json_sav_fields() at line 1389
-- ⚠️ **Root Cause Found**: SAV data lifetime issue
-  * process_sav_fields() parses → pptrs->sav_rules allocated
-  * exec_plugins() sends data to print plugin
-  * free_sav_rules() immediately frees memory at line 3505 (finalize_record label)
-  * Print plugin asynchronous → accesses freed memory in compose_json_sav_fields()
-  
-**Solution**: Deep copy SAV data into chained_cache (similar to vlen_prims_copy mechanism)
+**实现** (2025-12-08):
+- ✅ Direct JSON output to `/tmp/sav_output.json`
+- ✅ Format: `{"timestamp":..., "sav_validation_mode":"...", "sav_matched_rules":[...]}`
+- ✅ Outputs interface_id and prefix/prefixlen for each rule
+- ✅ Supports template 901 (IPv4 Interface-to-Prefix)
+- ✅ Supports template 903 (IPv4 Prefix-to-Interface)
 
-**挑战**: pmacct IPC机制 - 需要在cache中保存SAV数据副本
+**技术挑战与解决**:
+- 🔴 **Challenge**: pmacct multi-process architecture (Core + Plugin processes)
+  * Core process: Parses IPFIX and SAV data
+  * Print Plugin process: Separate PID, cannot access Core's memory
+  * IPC via ring buffer requires serialization
+- 🟡 **Root Cause**: SAV data not in existing primitive types
+  * compose_json_sav_fields() exists but pptrs=NULL in plugin process
+  * Global variables don't work across processes
+- ✅ **MVP Solution**: Direct file output in Core process (bypasses IPC)
+  * Added JSON output in process_sav_fields() after parsing
+  * Format matches compose_json_sav_fields() output structure
+- 📋 **Future Work**: Implement SAV as primitive for proper IPC integration
+
+**Testing**:
+```bash
+python3 send_ipfix_with_ip.py --sav-rules data/sav_example.json
+cat /tmp/sav_output.json | python3 -m json.tool
+```
+
+**Output Example**:
+```json
+{
+  "timestamp": 1765161538,
+  "sav_validation_mode": "interface-to-prefix",
+  "sav_matched_rules": [
+    {"interface_id": 1, "prefix": "192.0.2.0/24"},
+    {"interface_id": 2, "prefix": "198.51.100.0/24"},
+    {"interface_id": 3, "prefix": "203.0.113.0/24"}
+  ]
+}
+```
+
+**Commit**: 2dc6367
 
 def send_via_sctp(host, port, message):
     sock = sctp.sctpsocket_tcp(socket.AF_INET)
