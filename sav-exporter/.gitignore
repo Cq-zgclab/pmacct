@@ -1,0 +1,9 @@
+bin/
+*.o
+*.so
+*.a
+*.dylib
+*.log
+*.json
+core
+.DS_Store
