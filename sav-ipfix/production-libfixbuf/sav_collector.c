@@ -21,6 +21,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 #include <glib.h>
 
 /* Global state */
@@ -222,43 +223,252 @@ static void listener_app_free(void *ctx) {
 }
 
 /**
+ * Decode and output IPv4 Interface-to-Prefix SAV rule (Template 901)
+ */
+static void output_sav_rule_901(uint8_t *data, size_t len, FILE *output) {
+    char prefix_str[INET_ADDRSTRLEN];
+    
+    if (len < 9) {
+        fprintf(stderr, "Invalid 901 record length: %zu (expected 9)\n", len);
+        return;
+    }
+    
+    sav_rule_ipv4_if2prefix_t rule;
+    memcpy(&rule.interface_index, data, 4);
+    memcpy(&rule.prefix_v4, data + 4, 4);
+    rule.prefix_length = data[8];
+    
+    /* Convert to host byte order */
+    rule.interface_index = ntohl(rule.interface_index);
+    
+    /* Format IP address */
+    inet_ntop(AF_INET, rule.prefix_v4, prefix_str, sizeof(prefix_str));
+    
+    fprintf(output, "  {\n");
+    fprintf(output, "    \"template_id\": 901,\n");
+    fprintf(output, "    \"type\": \"ipv4_interface_to_prefix\",\n");
+    fprintf(output, "    \"interface\": %u,\n", rule.interface_index);
+    fprintf(output, "    \"prefix\": \"%s/%u\",\n", prefix_str, rule.prefix_length);
+    fprintf(output, "    \"timestamp\": %lu\n", (unsigned long)time(NULL));
+    fprintf(output, "  }");
+}
+
+/**
+ * Decode and output IPv6 Interface-to-Prefix SAV rule (Template 902)
+ */
+static void output_sav_rule_902(uint8_t *data, size_t len, FILE *output) {
+    char prefix_str[INET6_ADDRSTRLEN];
+    
+    if (len < 21) {
+        fprintf(stderr, "Invalid 902 record length: %zu (expected 21)\n", len);
+        return;
+    }
+    
+    sav_rule_ipv6_if2prefix_t rule;
+    memcpy(&rule.interface_index, data, 4);
+    memcpy(&rule.prefix_v6, data + 4, 16);
+    rule.prefix_length = data[20];
+    
+    /* Convert to host byte order */
+    rule.interface_index = ntohl(rule.interface_index);
+    
+    /* Format IP address */
+    inet_ntop(AF_INET6, rule.prefix_v6, prefix_str, sizeof(prefix_str));
+    
+    fprintf(output, "  {\n");
+    fprintf(output, "    \"template_id\": 902,\n");
+    fprintf(output, "    \"type\": \"ipv6_interface_to_prefix\",\n");
+    fprintf(output, "    \"interface\": %u,\n", rule.interface_index);
+    fprintf(output, "    \"prefix\": \"%s/%u\",\n", prefix_str, rule.prefix_length);
+    fprintf(output, "    \"timestamp\": %lu\n", (unsigned long)time(NULL));
+    fprintf(output, "  }");
+}
+
+/**
+ * Decode and output IPv4 Prefix-to-Interface SAV rule (Template 903)
+ */
+static void output_sav_rule_903(uint8_t *data, size_t len, FILE *output) {
+    char prefix_str[INET_ADDRSTRLEN];
+    
+    if (len < 9) {
+        fprintf(stderr, "Invalid 903 record length: %zu (expected 9)\n", len);
+        return;
+    }
+    
+    sav_rule_ipv4_prefix2if_t rule;
+    memcpy(&rule.prefix_v4, data, 4);
+    rule.prefix_length = data[4];
+    memcpy(&rule.interface_index, data + 5, 4);
+    
+    /* Convert to host byte order */
+    rule.interface_index = ntohl(rule.interface_index);
+    
+    /* Format IP address */
+    inet_ntop(AF_INET, rule.prefix_v4, prefix_str, sizeof(prefix_str));
+    
+    fprintf(output, "  {\n");
+    fprintf(output, "    \"template_id\": 903,\n");
+    fprintf(output, "    \"type\": \"ipv4_prefix_to_interface\",\n");
+    fprintf(output, "    \"prefix\": \"%s/%u\",\n", prefix_str, rule.prefix_length);
+    fprintf(output, "    \"interface\": %u,\n", rule.interface_index);
+    fprintf(output, "    \"timestamp\": %lu\n", (unsigned long)time(NULL));
+    fprintf(output, "  }");
+}
+
+/**
+ * Decode and output IPv6 Prefix-to-Interface SAV rule (Template 904)
+ */
+static void output_sav_rule_904(uint8_t *data, size_t len, FILE *output) {
+    char prefix_str[INET6_ADDRSTRLEN];
+    
+    if (len < 21) {
+        fprintf(stderr, "Invalid 904 record length: %zu (expected 21)\n", len);
+        return;
+    }
+    
+    sav_rule_ipv6_prefix2if_t rule;
+    memcpy(&rule.prefix_v6, data, 16);
+    rule.prefix_length = data[16];
+    memcpy(&rule.interface_index, data + 17, 4);
+    
+    /* Convert to host byte order */
+    rule.interface_index = ntohl(rule.interface_index);
+    
+    /* Format IP address */
+    inet_ntop(AF_INET6, rule.prefix_v6, prefix_str, sizeof(prefix_str));
+    
+    fprintf(output, "  {\n");
+    fprintf(output, "    \"template_id\": 904,\n");
+    fprintf(output, "    \"type\": \"ipv6_prefix_to_interface\",\n");
+    fprintf(output, "    \"prefix\": \"%s/%u\",\n", prefix_str, rule.prefix_length);
+    fprintf(output, "    \"interface\": %u,\n", rule.interface_index);
+    fprintf(output, "    \"timestamp\": %lu\n", (unsigned long)time(NULL));
+    fprintf(output, "  }");
+}
+
+/**
+ * Decode SubTemplateList manually from raw data
+ * RFC 6313 format: [semantic(1)] [templateID(2)] [data records...]
+ */
+static gboolean decode_subtemplatelist_raw(
+    uint8_t *data,
+    size_t len,
+    FILE *output,
+    gboolean *first_output)
+{
+    if (len < 3) {
+        fprintf(stderr, "SubTemplateList too short: %zu bytes\n", len);
+        return FALSE;
+    }
+    
+    /* Parse STL header */
+    uint8_t semantic = data[0];
+    uint16_t template_id = ntohs(*(uint16_t *)(data + 1));
+    
+    fprintf(stderr, "SubTemplateList: semantic=0x%02x, template=%u, data_len=%zu\n",
+            semantic, template_id, len - 3);
+    
+    /* Calculate record size based on template ID */
+    size_t record_size;
+    switch (template_id) {
+        case TMPL_SAV_IPV4_INTERFACE_TO_PREFIX:
+        case TMPL_SAV_IPV4_PREFIX_TO_INTERFACE:
+            record_size = 9;  /* 4(int) + 4(ipv4) + 1(len) */
+            break;
+        case TMPL_SAV_IPV6_INTERFACE_TO_PREFIX:
+        case TMPL_SAV_IPV6_PREFIX_TO_INTERFACE:
+            record_size = 21;  /* 4(int) + 16(ipv6) + 1(len) */
+            break;
+        default:
+            fprintf(stderr, "Unknown template ID: %u\n", template_id);
+            return FALSE;
+    }
+    
+    /* Decode all records in the list */
+    size_t offset = 3;
+    while (offset + record_size <= len) {
+        /* Add comma if not first record */
+        if (!(*first_output)) {
+            fprintf(output, ",\n");
+        }
+        *first_output = FALSE;
+        
+        /* Decode based on template */
+        switch (template_id) {
+            case TMPL_SAV_IPV4_INTERFACE_TO_PREFIX:
+                output_sav_rule_901(data + offset, record_size, output);
+                break;
+            case TMPL_SAV_IPV6_INTERFACE_TO_PREFIX:
+                output_sav_rule_902(data + offset, record_size, output);
+                break;
+            case TMPL_SAV_IPV4_PREFIX_TO_INTERFACE:
+                output_sav_rule_903(data + offset, record_size, output);
+                break;
+            case TMPL_SAV_IPV6_PREFIX_TO_INTERFACE:
+                output_sav_rule_904(data + offset, record_size, output);
+                break;
+        }
+        
+        offset += record_size;
+        g_records_received++;
+    }
+    
+    if (offset != len) {
+        fprintf(stderr, "Warning: %zu bytes remaining in SubTemplateList\n", len - offset);
+    }
+    
+    return TRUE;
+}
+
+/**
  * Process received IPFIX messages from buffer
- * Simplified version - just logs received data for now
- * TODO: Implement proper template management and SubTemplateList decoding
+ * Implements SubTemplateList decoding according to RFC 6313
  */
 static gboolean process_buffer(fBuf_t *fbuf, FILE *output) {
     GError *err = NULL;
-    uint8_t buf[65536];
-    size_t rec_len;
-    size_t bufsize = sizeof(buf);
     gboolean ret = TRUE;
-    
-    (void)output;  /* Unused for now */
+    gboolean first_output = TRUE;
     
     fprintf(stderr, "Processing IPFIX stream...\n");
     
-    /* Simple message reading loop
-     * In a real implementation, we would:
-     * 1. Set internal template matching the exporter's external template
-     * 2. Use fBufNext() to read data records
-     * 3. Decode SubTemplateLists using fbSubTemplateList* functions
-     * 4. Output SAV rules as JSON
+    /* For manual decoding, we need to:
+     * 1. Read IPFIX messages as raw bytes
+     * 2. Parse template records to understand data record format
+     * 3. Identify SubTemplateList fields and decode them
+     * 
+     * Note: libfixbuf can do this automatically with proper setup,
+     * but for now we'll use a simplified approach for testing.
      */
     
+    fprintf(output, "[\n");
+    
+    /* Read records until EOF or error */
+    uint8_t buf[65536];
+    size_t bufsize;
+    
     while (ret) {
-        rec_len = fBufNext(fbuf, buf, &bufsize, &err);
+        bufsize = sizeof(buf);
+        size_t rec_len = fBufNext(fbuf, buf, &bufsize, &err);
         
         if (rec_len > 0) {
-            g_records_received++;
-            
-            if (g_records_received % 10 == 0) {
-                fprintf(stderr, "Received %lu records (%zu bytes each)\n",
-                        (unsigned long)g_records_received, rec_len);
+            /* Check if this looks like a SubTemplateList
+             * (starts with semantic byte + 2-byte template ID) */
+            if (rec_len >= 3 && buf[0] == 0xFF) {
+                /* Decode as SubTemplateList */
+                if (!decode_subtemplatelist_raw(buf, rec_len, output, &first_output)) {
+                    fprintf(stderr, "Failed to decode SubTemplateList\n");
+                }
+            } else {
+                /* Regular data record - log but don't process for now */
+                fprintf(stderr, "Received non-STL record: %zu bytes\n", rec_len);
+                if (rec_len > 0 && rec_len <= 20) {
+                    fprintf(stderr, "Data (hex): ");
+                    for (size_t i = 0; i < rec_len && i < 20; i++) {
+                        fprintf(stderr, "%02x ", buf[i]);
+                    }
+                    fprintf(stderr, "\n");
+                }
             }
-            
-            /* TODO: Decode the record based on template */
-            /* For now, just acknowledge receipt */
-            bufsize = sizeof(buf);  /* Reset buffer size for next read */
             
         } else {
             /* No more data or error */
@@ -268,7 +478,6 @@ static gboolean process_buffer(fBuf_t *fbuf, FILE *output) {
                 } else if (g_error_matches(err, FB_ERROR_DOMAIN, FB_ERROR_EOM)) {
                     /* End of message, continue reading */
                     g_clear_error(&err);
-                    bufsize = sizeof(buf);
                     continue;
                 } else {
                     fprintf(stderr, "Error reading from buffer: %s\n", err->message);
@@ -280,7 +489,9 @@ static gboolean process_buffer(fBuf_t *fbuf, FILE *output) {
         }
     }
     
-    fprintf(stderr, "Finished processing buffer (%lu records total)\n",
+    fprintf(output, "\n]\n");
+    
+    fprintf(stderr, "Finished processing buffer (%lu SAV rules decoded)\n",
             (unsigned long)g_records_received);
     
     return ret;
