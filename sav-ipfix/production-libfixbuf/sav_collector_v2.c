@@ -269,8 +269,11 @@ static gboolean process_buffer(fBuf_t *fbuf) {
     while (g_running) {
         size_t rec_size = sizeof(record);
         
-        /* Clear the record */
+        /* Clear and initialize the record (CRITICAL for SubTemplateList!) */
         memset(&record, 0, sizeof(record));
+        
+        /* Initialize SubTemplateList for reading */
+        fbSubTemplateListCollectorInit(&record.content_list);
         
         /* Read next record using libfixbuf API */
         if (!fBufNext(fbuf, (uint8_t *)&record, &rec_size, &err)) {
