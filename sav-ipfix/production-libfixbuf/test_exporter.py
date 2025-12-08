@@ -61,6 +61,9 @@ class IPFIXExporter:
         - savTargetType (1 byte)
         - savMatchedContentList (SubTemplateList, variable)
         - savPolicyAction (1 byte)
+        
+        Note: IE numbers >32767 need enterprise bit (0x8000) set in IPFIX.
+        For private IEs 50000-50003, we set enterprise bit + enterprise ID.
         """
         # Template Record Header
         template_header = struct.pack('!HH',
@@ -68,21 +71,21 @@ class IPFIXExporter:
             4                        # Field Count
         )
         
-        # Field Specifiers (each 4 bytes: IE number + length)
-        # Using placeholder IEs until IANA assignment
+        # Field Specifiers with enterprise bit
+        # Format: IE number (2 bytes, high bit=1 for enterprise) + length (2 bytes) + enterprise ID (4 bytes)
         fields = b''
         
-        # savRuleType (IE 50000, 1 byte)
-        fields += struct.pack('!HH', 50000, 1)
+        # savRuleType (IE 50000, 1 byte, enterprise 0)
+        fields += struct.pack('!HHI', 0x8000 | (50000 & 0x7FFF), 1, 0)
         
-        # savTargetType (IE 50001, 1 byte)
-        fields += struct.pack('!HH', 50001, 1)
+        # savTargetType (IE 50001, 1 byte, enterprise 0)
+        fields += struct.pack('!HHI', 0x8000 | (50001 & 0x7FFF), 1, 0)
         
-        # savMatchedContentList (IE 50002, variable length)
-        fields += struct.pack('!HH', 50002, 0xFFFF)  # 0xFFFF = variable length
+        # savMatchedContentList (IE 50002, variable, enterprise 0)
+        fields += struct.pack('!HHI', 0x8000 | (50002 & 0x7FFF), 0xFFFF, 0)
         
-        # savPolicyAction (IE 50003, 1 byte)
-        fields += struct.pack('!HH', 50003, 1)
+        # savPolicyAction (IE 50003, 1 byte, enterprise 0)
+        fields += struct.pack('!HHI', 0x8000 | (50003 & 0x7FFF), 1, 0)
         
         template_record = template_header + fields
         
