@@ -180,14 +180,21 @@ CFLAGS = -Wall -Wextra -DDEBUG -g
 
 ## References
 
-- [draft-cao-opsawg-ipfix-sav-01](https://datatracker.ietf.org/doc/draft-cao-opsawg-ipfix-sav/)
+- [draft-cao-opsawg-ipfix-sav-01](../../docs/draft-cao-opsawg-ipfix-sav-01.md) - Local copy
+- [IETF Datatracker](https://datatracker.ietf.org/doc/draft-cao-opsawg-ipfix-sav/)
 - [RFC 7011 - IPFIX Protocol](https://tools.ietf.org/html/rfc7011)
 - [RFC 6313 - SubTemplateList](https://tools.ietf.org/html/rfc6313)
 - [libfixbuf Documentation](https://tools.netsa.cert.org/fixbuf/)
 
+## See Also
+
+- **Hackathon version**: `../hackathon-ipfixcol2/README.md` (quick prototyping)
+- **Implementation comparison**: `../README.md`
+- **Main project README**: `../../README_SAV_IPFIX.md`
+
 ## License
 
-Follows pmacct license (see parent directory).
+Follows pmacct license (see `../../COPYING`).
 
 ## Author
 
