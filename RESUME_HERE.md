@@ -227,14 +227,14 @@ pkill ipfixcol2
 
 ## 📋 Phase 1a Checklist (8-12 hours)
 
-### Task 1: SubTemplateList Parser ⏳ (2-4h)
-- [ ] Create `scripts/parse_subtemplatelist.py`
-- [ ] Implement hex string to bytes conversion
-- [ ] Decode basicList header (semantic, field ID, length)
-- [ ] Parse sub-records with template 901
-- [ ] Handle rule types (prefix/AS/interface)
-- [ ] Write unit tests with example data
-- [ ] Test with real ipfixcol2 output
+### Task 1: SubTemplateList Parser ✅ **COMPLETE** (2h)
+- [x] Create `scripts/parse_subtemplatelist.py`
+- [x] Implement hex string to bytes conversion
+- [x] Decode subTemplateList header (semantic + template ID)
+- [x] Parse sub-records with all 4 templates (901-904)
+- [x] Support IPv4/IPv6 Interface-to-Prefix and Prefix-to-Interface
+- [x] Test with real ipfixcol2 output
+- [x] **Verified**: Successfully decoded 3 SAV rules from live data
 
 ### Task 2: End-to-End Test Harness (3-4h)
 - [ ] Create automated pipeline script
