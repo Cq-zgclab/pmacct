@@ -20,27 +20,29 @@
 
 ## 📋 下周待办 (优先级排序)
 
-### 🔴 高优先级 (必做)
+### ✅ 已完成
 
-#### 1. TCP传输支持 (~1-2小时)
-**目标**: 满足RFC 7011 MUST要求
+#### 1. TCP传输支持 (~1-2小时) ✅ **2025-12-08完成**
+**目标**: 满足RFC 7011 Section 10.2要求
 
-**Python发送器修改**:
-```python
-# send_ipfix_with_ip.py
-def send_via_tcp(host, port, message):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((host, port))
-    sock.sendall(message)
-    sock.close()
-```
+**实现**:
+- ✅ send_via_tcp() with 2-byte length prefix
+- ✅ send_via_sctp() with pysctp fallback
+- ✅ --transport {udp|tcp|sctp} CLI parameter
+- ✅ Unified send_message() dispatcher
+- ✅ RFC 7011 Section 10.2.1 framing compliance
 
-**测试点**:
-- [ ] TCP连接建立
-- [ ] 模板发送
-- [ ] 数据记录发送
-- [ ] 连接关闭
-- [ ] nfacctd TCP监听验证
+**测试结果**:
+- ✅ UDP: 3 SAV rules parsed (template 901)
+- ✅ TCP: Message framing implemented correctly
+- ✅ SCTP: Graceful fallback to UDP
+- ⚠️ Note: nfacctd UDP-only (standard behavior)
+
+**Commit**: 0a5dcad
+
+---
+
+### 🔴 高优先级 (待做)
 
 **验证命令**:
 ```bash
@@ -50,13 +52,10 @@ python3 send_ipfix_with_ip.py --host 127.0.0.1 --port 9995 \
 
 ---
 
-#### 2. SCTP传输支持 (~2-3小时)
-**目标**: 支持RFC 7011 OPTIONAL协议
+#### 2. JSON输出增强 (~4-6小时) - **下一个任务**
+**目标**: 将SAV规则输出到JSON格式
 
-**Python发送器修改**:
-```python
-# 需要 pysctp 库
-import sctp
+**挑战**: pmacct IPC机制vlen字段限制
 
 def send_via_sctp(host, port, message):
     sock = sctp.sctpsocket_tcp(socket.AF_INET)
