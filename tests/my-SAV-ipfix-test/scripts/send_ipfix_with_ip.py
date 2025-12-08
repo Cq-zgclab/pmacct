@@ -96,6 +96,13 @@ import ipaddress
 import sys
 import json
 
+# Try to import pysctp for SCTP support (optional)
+try:
+    import sctp
+    SCTP_AVAILABLE = True
+except ImportError:
+    SCTP_AVAILABLE = False
+
 # ============================================================================
 # SAV IPFIX IE Definitions (draft-cao-opsawg-ipfix-sav-01)
 # ============================================================================
@@ -139,7 +146,92 @@ def encode_varlen(length: int) -> bytes:
         return struct.pack('!BH', 255, length)
 
 
+# ============================================================================
+# Transport Layer Functions (RFC 7011 Section 10)
+# ============================================================================
+
+def send_via_udp(host: str, port: int, message: bytes) -> None:
+    """Send IPFIX message via UDP (RFC 7011 Section 10.3)
+    
+    UDP is connectionless and may lose messages.
+    Templates should be resent periodically (default: every 10 minutes).
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        sock.sendto(message, (host, port))
+    finally:
+        sock.close()
+
+
+def send_via_tcp(host: str, port: int, message: bytes) -> None:
+    """Send IPFIX message via TCP (RFC 7011 Section 10.2)
+    
+    TCP provides reliable, ordered delivery.
+    Each message MUST be preceded by a 2-byte length field (RFC 7011 Section 10.2.1).
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.connect((host, port))
+        # RFC 7011 Section 10.2.1: Message length prefix (2 bytes, network byte order)
+        length_prefix = struct.pack('!H', len(message))
+        sock.sendall(length_prefix + message)
+    finally:
+        sock.close()
+
+
+def send_via_sctp(host: str, port: int, message: bytes) -> None:
+    """Send IPFIX message via SCTP (RFC 7011 Section 10.1)
+    
+    SCTP provides reliable, message-oriented delivery with multiple streams.
+    Stream 0: Templates (control messages)
+    Stream 1+: Data records
+    
+    Note: SCTP is RFC 7011 OPTIONAL but recommended for production.
+    Requires pysctp library: pip3 install pysctp
+    """
+    if not SCTP_AVAILABLE:
+        raise RuntimeError('SCTP transport requested but pysctp module not available. '
+                          'Install with: pip3 install pysctp')
+    
+    sock = sctp.sctpsocket_tcp(socket.AF_INET)
+    try:
+        sock.connect((host, port))
+        # Use default stream (0) for now
+        # TODO: Separate template messages (stream 0) from data (stream 1+)
+        sock.sctp_send(message, ppid=socket.htonl(1))
+    finally:
+        sock.close()
+
+
+def send_message(host: str, port: int, message: bytes, transport: str = 'udp') -> None:
+    """Send IPFIX message using specified transport protocol
+    
+    Args:
+        host: Target collector hostname/IP
+        port: Target collector port
+        message: Complete IPFIX message (header + sets)
+        transport: 'udp', 'tcp', or 'sctp'
+    
+    Raises:
+        ValueError: Unknown transport protocol
+        RuntimeError: SCTP requested but not available
+    """
+    transport = transport.lower()
+    
+    if transport == 'udp':
+        send_via_udp(host, port, message)
+    elif transport == 'tcp':
+        send_via_tcp(host, port, message)
+    elif transport == 'sctp':
+        send_via_sctp(host, port, message)
+    else:
+        raise ValueError(f'Unknown transport protocol: {transport}. '
+                        f'Must be one of: udp, tcp, sctp')
+
+
+# ============================================================================
 # Sub-Template Definitions (RFC 6313)
+# ============================================================================
 def build_sub_template_901():
     """Sub-Template 901: Interface-to-Prefix Mapping (IPv4)
     
@@ -689,7 +781,9 @@ def validate_ipfix_message(msg: bytes) -> (bool, str):
 def main():
     p = argparse.ArgumentParser(description='Send IPFIX v10 message with IP + SAV IEs')
     p.add_argument('--host', default='127.0.0.1', help='collector host')
-    p.add_argument('--port', type=int, default=9991, help='collector UDP port')
+    p.add_argument('--port', type=int, default=9995, help='collector port (9995 for UDP/TCP, 4739 for SCTP)')
+    p.add_argument('--transport', default='udp', choices=['udp', 'tcp', 'sctp'],
+                   help='transport protocol: udp (default), tcp (RFC 7011 MUST), sctp (RFC 7011 OPTIONAL)')
     p.add_argument('--count', type=int, default=1, help='number of messages to send')
     p.add_argument('--interval', type=float, default=1.0, help='seconds between messages')
     p.add_argument('--src', default='127.0.0.1', help='source IPv4 address')
@@ -736,7 +830,12 @@ def main():
             print('SAV rules must be a JSON array or object with "rules" key', file=sys.stderr)
             sys.exit(1)
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # Check SCTP availability if requested
+    if args.transport == 'sctp' and not SCTP_AVAILABLE:
+        print('ERROR: SCTP transport requested but pysctp module not available.', file=sys.stderr)
+        print('Install with: pip3 install pysctp', file=sys.stderr)
+        print('Or use: apk add lksctp-tools-dev && pip3 install pysctp', file=sys.stderr)
+        sys.exit(1)
 
     for i in range(1, args.count + 1):
         if args.use_complete_message:
@@ -764,13 +863,25 @@ def main():
             print(f'Validation failed: {reason}', file=sys.stderr)
             sys.exit(1)
         
-        sock.sendto(msg, (args.host, args.port))
+        # Send using specified transport
+        try:
+            send_message(args.host, args.port, msg, args.transport)
+        except Exception as e:
+            print(f'ERROR sending message: {e}', file=sys.stderr)
+            sys.exit(1)
+        
+        # Display send confirmation
+        transport_info = f'{args.transport.upper()}'
+        if args.transport == 'tcp':
+            transport_info += f' (with 2-byte length prefix)'
+        elif args.transport == 'sctp':
+            transport_info += f' (stream-based)'
         
         if sav_rules:
-            print(f'sent message #{i} to {args.host}:{args.port} ({len(msg)} bytes, '
-                  f'{len(sav_rules)} SAV rules, sub-template {args.sub_template_id})')
+            print(f'sent message #{i} to {args.host}:{args.port} via {transport_info} '
+                  f'({len(msg)} bytes, {len(sav_rules)} SAV rules, sub-template {args.sub_template_id})')
         else:
-            print(f'sent message #{i} to {args.host}:{args.port} ({len(msg)} bytes)')
+            print(f'sent message #{i} to {args.host}:{args.port} via {transport_info} ({len(msg)} bytes)')
         
         time.sleep(args.interval)
 
