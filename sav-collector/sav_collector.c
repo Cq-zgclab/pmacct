@@ -19,6 +19,7 @@
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
+#include <time.h>
 #include <arpa/inet.h>
 #include <glib.h>
 
@@ -27,17 +28,64 @@ static gboolean g_running = TRUE;
 static FILE *g_output_file = NULL;
 static uint64_t g_records_received = 0;
 
-/* SAV Information Element IDs (Private Enterprise Number: 0 = IANA) */
-#define IE_SAV_RULE_TYPE               TBD  /* To be assigned */
-#define IE_SAV_INTERFACE_INDEX         TBD
-#define IE_SAV_PREFIX                  TBD
-#define IE_SAV_PREFIX_LENGTH           TBD
+/* Data structures for SAV rules */
+typedef struct {
+    uint32_t interface_index;
+    uint8_t prefix_v4[4];
+    uint8_t prefix_length;
+} sav_rule_ipv4_if2prefix_t;
 
-/* SAV Template IDs from draft-cao-opsawg-ipfix-sav-01 */
+typedef struct {
+    uint32_t interface_index;
+    uint8_t prefix_v6[16];
+    uint8_t prefix_length;
+} sav_rule_ipv6_if2prefix_t;
+
+typedef struct {
+    uint8_t prefix_v4[4];
+    uint8_t prefix_length;
+    uint32_t interface_index;
+} sav_rule_ipv4_prefix2if_t;
+
+typedef struct {
+    uint8_t prefix_v6[16];
+    uint8_t prefix_length;
+    uint32_t interface_index;
+} sav_rule_ipv6_prefix2if_t;
+
+/* SAV Information Element IDs from draft-cao-opsawg-ipfix-sav-01
+ * Using placeholder values until IANA assignment */
+#define IE_SAV_RULE_TYPE                50000  /* TBD1 - placeholder */
+#define IE_SAV_TARGET_TYPE              50001  /* TBD2 - placeholder */
+#define IE_SAV_MATCHED_CONTENT_LIST     50002  /* TBD3 - subTemplateList */
+#define IE_SAV_POLICY_ACTION            50003  /* TBD4 - placeholder */
+
+/* Standard IPFIX IEs used in SAV sub-templates */
+#define IE_INGRESS_INTERFACE            10     /* RFC 5102 */
+#define IE_SOURCE_IPV4_PREFIX           44     /* RFC 5102 */
+#define IE_SOURCE_IPV4_PREFIX_LENGTH    29     /* RFC 5102 */
+#define IE_SOURCE_IPV6_PREFIX           170    /* RFC 5102 */
+#define IE_SOURCE_IPV6_PREFIX_LENGTH    29     /* RFC 5102 (same as v4) */
+
+/* SAV Template IDs from draft-cao-opsawg-ipfix-sav-01 Appendix A */
 #define TMPL_SAV_IPV4_INTERFACE_TO_PREFIX   901
 #define TMPL_SAV_IPV6_INTERFACE_TO_PREFIX   902
 #define TMPL_SAV_IPV4_PREFIX_TO_INTERFACE   903
 #define TMPL_SAV_IPV6_PREFIX_TO_INTERFACE   904
+
+/* SAV rule types */
+#define SAV_RULE_TYPE_ALLOWLIST         0
+#define SAV_RULE_TYPE_BLOCKLIST         1
+
+/* SAV target types */
+#define SAV_TARGET_TYPE_INTERFACE       0
+#define SAV_TARGET_TYPE_PREFIX          1
+
+/* SAV policy actions */
+#define SAV_POLICY_ACTION_PERMIT        0
+#define SAV_POLICY_ACTION_DISCARD       1
+#define SAV_POLICY_ACTION_RATE_LIMIT    2
+#define SAV_POLICY_ACTION_REDIRECT      3
 
 /**
  * Signal handler for graceful shutdown
@@ -108,19 +156,22 @@ static gboolean parse_args(int argc, char **argv, config_t *config) {
 
 /**
  * Initialize Information Model with SAV IEs
- * TODO: Replace TBD values with actual IE numbers once assigned
+ * Uses standard info model with RFC 5102 IEs for now
+ * TODO: Add custom SAV IEs once draft is finalized
  */
 static fbInfoModel_t *init_sav_info_model(void) {
     fbInfoModel_t *model = fbInfoModelAlloc();
-    
-    /* Note: Using placeholder values until SAV IEs are officially assigned
-     * For testing, we'll use the SubTemplateList mechanism as defined in RFC 6313
-     */
     
     if (model == NULL) {
         fprintf(stderr, "Failed to allocate information model\n");
         return NULL;
     }
+    
+    /* For now, using standard IPFIX IEs (ingressInterface, sourceIPv4/v6Prefix, etc.)
+     * Custom SAV IEs will be added when draft-cao-opsawg-ipfix-sav is finalized */
+    
+    fprintf(stderr, "Information model initialized with %u standard IPFIX elements\n",
+            fbInfoModelCountElements(model));
     
     return model;
 }
@@ -172,20 +223,67 @@ static void listener_app_free(void *ctx) {
 
 /**
  * Process received IPFIX messages from buffer
- * TODO: Implement SubTemplateList decoding
+ * Simplified version - just logs received data for now
+ * TODO: Implement proper template management and SubTemplateList decoding
  */
 static gboolean process_buffer(fBuf_t *fbuf, FILE *output) {
-    (void)fbuf;    /* Unused - placeholder */
-    (void)output;  /* Unused - placeholder */
+    GError *err = NULL;
+    uint8_t buf[65536];
+    size_t rec_len;
+    size_t bufsize = sizeof(buf);
+    gboolean ret = TRUE;
     
-    /* Placeholder: Will implement message reading and SubTemplateList decoding here */
-    g_records_received++;
+    (void)output;  /* Unused for now */
     
-    if (g_records_received % 100 == 0) {
-        fprintf(stderr, "Processed %lu records\n", (unsigned long)g_records_received);
+    fprintf(stderr, "Processing IPFIX stream...\n");
+    
+    /* Simple message reading loop
+     * In a real implementation, we would:
+     * 1. Set internal template matching the exporter's external template
+     * 2. Use fBufNext() to read data records
+     * 3. Decode SubTemplateLists using fbSubTemplateList* functions
+     * 4. Output SAV rules as JSON
+     */
+    
+    while (ret) {
+        rec_len = fBufNext(fbuf, buf, &bufsize, &err);
+        
+        if (rec_len > 0) {
+            g_records_received++;
+            
+            if (g_records_received % 10 == 0) {
+                fprintf(stderr, "Received %lu records (%zu bytes each)\n",
+                        (unsigned long)g_records_received, rec_len);
+            }
+            
+            /* TODO: Decode the record based on template */
+            /* For now, just acknowledge receipt */
+            bufsize = sizeof(buf);  /* Reset buffer size for next read */
+            
+        } else {
+            /* No more data or error */
+            if (err) {
+                if (g_error_matches(err, FB_ERROR_DOMAIN, FB_ERROR_EOF)) {
+                    fprintf(stderr, "Connection closed by peer\n");
+                } else if (g_error_matches(err, FB_ERROR_DOMAIN, FB_ERROR_EOM)) {
+                    /* End of message, continue reading */
+                    g_clear_error(&err);
+                    bufsize = sizeof(buf);
+                    continue;
+                } else {
+                    fprintf(stderr, "Error reading from buffer: %s\n", err->message);
+                    ret = FALSE;
+                }
+                g_clear_error(&err);
+            }
+            break;
+        }
     }
     
-    return TRUE;
+    fprintf(stderr, "Finished processing buffer (%lu records total)\n",
+            (unsigned long)g_records_received);
+    
+    return ret;
 }
 
 /**
